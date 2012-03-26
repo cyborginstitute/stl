@@ -1,0 +1,113 @@
+=====================
+Code and Organization
+=====================
+
+EDIT file
+
+Coding Goals
+------------
+
+The goals in writing this script were:
+
+- To have something that separated the "worker" functions, from the
+  configuration or settings. In the past I'd used a lot of environment
+  variables set early in a script that I could use to customize the
+  script. While this approach is functional, it's not very flexible,
+  and it means that in order to use the script, you have to mangle a
+  lot of variables *just right*. Putting all of this configuration
+  into command-line options is similarly insufficent for making usable
+  or generalizable tools.
+
+- To use ``case`` statements, and ``for`` loops, when possible to
+  solve all of the repetitious code problems I was having in a previous
+  version, without resorting to long, complex, and finicky
+  conditionals.
+
+- To set good defaults and use them when possible. This both makes the
+  script easier to set up, and also makes it easier to add new
+  projects very quickly. The assumption is that you have a
+  "``~/projects``" directory beneath which are a collection of
+  projects published/managed by Sphinx, with ``rst`` extensions. the
+  script can do other things, but that takes a (*bit*) more work.
+
+- To run quickly. While there's a lot of crude elements and
+  inefficiencies (particularly around blunt use of loops and not
+  dropping exiting if the options are verifiable invalid,) it rarely
+  takes very long to run, and is able to finish quickly. This is
+  probably largely the result of being relatively "pure" zsh. There's
+  some use of the :command:`date` command, and a call to :command:`wc`
+  to return word counts, and two "``ifconfig | grep``" calls to see if
+  networking is up to configure the notification. In all it's really
+  straight forward.
+
+File Organization
+-----------------
+
+``stl`` begins with a number of generic functions that are reused
+throughout the script, and ends with a number of deployment specific
+functions that you'll need to customize so that the script knows where
+to find your files and work. See the :ref:`previous section
+<stl-customization>` for more information on how to customize the
+script for personal usage, and the :ref:`code path's <stl-code-paths>`
+section for more information on how the interpreter processes the
+code.
+
+This section provides an inventory, as they appear in the file, of
+each function and it's general purpose.
+
+- ``notify-init`` configures the notification system, and creates a
+  ``notify`` function that either logs the output of script to a
+  logfile (i.e. "``~/$PROJECT/stats.log``") or sends an xmpp message
+  using an ``xmpp-notify`` script that is also included in the
+  distribution.
+
+  The script will use the log file if:
+
+  - There is no network connection.
+  - The file "``/tmp/$PROJECT-stats/log``" exists.
+
+  Otherwise the script will send log messages to XMPP. Use a command
+  in the following form to toggle XMPP/log file logging.
+
+  .. code-block:: sh
+
+     stl [domain] output xmpp
+     stl [domain] output logfile
+
+  Remember that you *must* configure your domain before running this
+  command.
+
+- ``action-handler`` is a simple function that holds a case statement
+  that calls one of the other functions that does the actual work of
+  the script.
+
+- ``stats-log`` allows users to create a number of entries in the log
+  with arbitrary messages, to provide the build reports and word
+  counts with context. ``stats-logs`` requires that you specify a
+  ``start``, ``stop``, or ``note``, followed by a message.
+
+  Output follows the system configuration for "logfile" or "xmpp"
+  notifications.
+
+- ``build-report`` opens or outputs the contents of the last build of
+  the specified project or projects. Use these options to check for
+  build errors.
+
+- ``stats-base`` is the main worker function of ``stl``, and it checks
+  and returns word counts for projects primarily. Unless you include
+  the "``force``" argument, this function will only return data *if*
+  the value is *different* from the value when the script was last
+  run. Every time the script runs, it checks against the last new
+  value written in the "``/tmp/$PROJECTS-stats/`` folder.
+
+- ``compile-project`` triggers a rebuild or build of the project. It
+  supports Sphinx (including ssfms,) and Ikiwiki using git. The
+  function writes the output of the build process to files in the
+  "``/tmp/$PROJECT-stats``" folder, and logs completion via the
+  ``notify`` function.
+
+- ``domain-selector`` is a function that sets sub-project specific
+  variables before calling the "``action-handler``" function.
+
+- ``main`` the primary function of the code, and the only function
+  that is called directly from the main body of the script.

@@ -1,0 +1,49 @@
+============================
+Personal Status Logger (stl)
+============================
+
+EDIT file
+
+Contents
+--------
+
+.. toctree::
+
+   usage
+   code
+   internals
+   contribute
+
+Resources
+---------
+
+- `stl git repository <http://git.cyborginstitute.net/?p=stl.git>`_
+- `stl on Github <https://github.com/tychoish/stl/>`_
+- `stl issue tracker <http://issues.cyborginstitute.net/>`_
+
+Overview
+--------
+
+``stl`` (i.e. "status logger") is a tool for managing, maintaining,
+and logging work for writers. It provides a unified interface around
+logging word count information, as well as compiling projects, and
+other related functionality. If you publish text using software such
+as `ikiwiki <http://ikiwiki.info/>`_, `Sphinx
+<http://sphinx.pocoo.org/>`_, or using ad hoc Makefiles, ``stl`` may
+be exactly the tool you need to:
+
+- Record, manage, and view the output of your build tools (i.e. build
+  reports.)
+
+- Track word counts automatically to provide an overview of your
+  progress both as you work and as you're attempting to track daily
+  and hourly progress.
+
+- Wrap your build tools to provide a more consistent interface.
+
+The script and examples are written in `zsh <http://www.zsh.org/>`_ as
+of early 2012, but may be rewritten in Python in the near future. In
+many cases ``stl`` is useful as-is; however, this site provides an
+in-depth over view over stl and suggestions for customizing and
+extending its functionality to collect data and provide an interface
+for *your* projects.

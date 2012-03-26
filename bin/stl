@@ -1,0 +1,276 @@
+#!/bin/zsh
+
+# Copyright (C) 2012, Sam Kleinman
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+# of the Software, and to permit persons to whom the Software is furnished to do
+# so, subject to the following conditions:
+#
+# - The above copyright notice and this permission notice shall be
+#   included in all copies or substantial portions of the Software.
+#
+# - Neither the name of the Cyborg Institute nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+notify-init(){
+    if [ ! -z $CONFIG ]; then
+        case "$1" in
+            ( xmpp ) rm -f /tmp/$PROJECT-stats/log ;;
+            ( logfile ) touch /tmp/$PROJECT-stats/log ;;
+            ( * ) ;;
+        esac
+    fi
+
+    if [ -z $LOG_TAG ]; then; LOG_TAG=$PROJECT ; fi
+
+    log-file-notify() { touch ~/$PROJECT/stats.log;  echo "[`date +%R`] $@" >> ~/$PROJECT/stats.log }
+
+    if [ `ifconfig | grep -c "wlan"` = "0" -a `ifconfig eth0 | grep -c "inet addr"` = "0" ]; then;
+        notify(){ log-file-notify $@ }
+    elif [ -f /tmp/$PROJECT-stats/log ]; then
+        notify(){ log-file-notify $@ }
+    else
+        notify(){ ./xmpp-notify "<$LOG_TAG.stats> $@" }
+    fi
+
+    if [ ! -z $CONFIG ]; then; notify "Notification type ($1) updated."; fi
+
+}
+
+action-handler(){
+    case $ACTION in
+        ( make ) shift; compile-project $@ ;;
+        ( stats ) shift; stats-base $@ ;;
+        ( entry ) stats-log $@; exit 0 ;;
+        ( report ) build-report $@; exit 0 ;;
+        ( output ) CONFIG=1 notify-init $@; exit 0 ;;
+        ( * ) stats-base $@ ;;
+    esac
+}
+
+stats-log(){
+    notify-init
+    type=$ARG[2]
+    ARG[1,2]=()
+
+    if [ ! -f /tmp/$PROJECT-stats/log ]; then;
+        echo '>>' logging not enabled. Enable logging with \"\$ touch /tmp/$PROJECT-stats/log\"; exit 1
+    fi
+
+    case "$type" in
+        ( start ) notify --- \[`date "+%a %b %d %Y"`\]: Starting $PROJECT work. \($ARG\) --- ;;
+        ( stop ) notify --- \[`date "+%a %b %d %Y"`\]: Ending $PROJECT work. \($ARG\) --- ;;
+        ( note ) notify --- \[`date "+%a %b %d %Y"`\]: $ARG ;;
+        ( * ) echo '>> please specify "start", "stop", "note" to specify the action.'; exit 1 ;;
+    esac
+}
+
+build-report(){
+    notify-init
+    if [ -z $BUILD_REPORTS_LOC ]; then; BUILD_REPORTS_LOC=~/$PROJECT/build-reports/ ; fi
+    interface=$2
+
+    for item in $queue; do
+        LAST_LOG=`ls -1 $BUILD_REPORTS_LOC*-$item* | tail -n 1`
+        case "$interface" in
+            ( less ) less $LAST_LOG ;;
+            ( more ) more $LAST_LOG ;;
+            ( cat ) echo -e "$LAST_LOG \n"; cat $LAST_LOG ;;
+            ( emacs-new ) emacsclient -n -c -a emacs $LAST_LOG ;;
+            ( emacs-term ) emacsclient -t -a emacs $LAST_LOG ;;
+            ( emacs ) emacsclient -n -a emacs  $LAST_LOG ;;
+            ( term ) urxvtcd -title $PROJECT-lastlog-$item -e less $LAST_LOG ;;
+            ( * ) echo '>>' Specify interface [less|more|cat|emacs|emacs-new|emacs-term|term].; exit 1 ;;
+        esac
+    done
+}
+
+
+stats-base(){
+    notify-init
+    if [ -z $PROJECT_PATH ]; then; PROJECT_PATH=$PROJECT; fi
+    if [ -z $BUILD_REPORTS_LOC ]; then; BUILD_REPORTS_LOC=~/$PROJECT/build-reports/ ; fi
+    if [ -z $DATE_OUTPUT_FORMAT ]; then; DATE_OUTPUT_FORMAT="%A %B %d, %Y (%I:%m %p)" ; fi
+    if [ -z $EXTENSION ]; then; EXTENSION=rst ; fi
+
+    for argument in $@; do
+        case "$argument" in
+            ( wc | word* ) outputs=($outputs wc);;
+            ( build* ) outputs=($outputs build) ;;
+            ( force ) FORCE=1 ;;
+            ( * ) ;;
+        esac
+    done
+
+    reporter() {
+        type=$1; project=$2; data=$3; message=$4
+
+        mkdir -p /tmp/$PROJECT-stats/
+
+        if [ "$FORCE" = "1" ]; then
+            notify $message
+        elif [ ! -e /tmp/$PROJECT-stats/$project-$type ]; then
+            echo $data > /tmp/$PROJECT-stats/$project-$type
+            notify $message
+        elif [ "$data" != "`cat /tmp/$PROJECT-stats/$project-$type`" ]; then
+            rm /tmp/$PROJECT-stats/$project-$type
+            echo $data > /tmp/$PROJECT-stats/$project-$type
+            notify $message
+        fi
+    }
+
+    for item in $queue; do
+        # eventually this will need to be set per-time, or be in a hash table
+        if [ -z $WC_PATH ]; then; WC_PATH=~/$PROJECT_PATH/$item/source/; fi
+
+        for output in $outputs; do
+            case $output in
+                ( wc )
+                  query_wc=`wc -w \`find $WC_PATH -readable -name "*.$EXTENSION"\` | grep total | sed 's/ total.*//;s/^ //'`
+                  message="$item word count: $query_wc"
+                  reporter wc $item $query_wc "$message"
+                  ;;
+                ( build )
+                  if [ -z $NO_BUILD ]; then
+                      query_build=`date -d @\`ls -1 $BUILD_REPORTS_LOC | grep "$item" | tail -1 | cut -d "-" -f 1\` +"$DATE_OUTPUT_FORMAT"`
+                      message="$item last built on $query_build."
+                      reporter build $item $query_build "$message"
+                  fi ;;
+                ( * )
+                ;;
+            esac
+        done
+        WC_PATH=()
+    done
+}
+
+compile-project(){
+    notify-init
+
+    if [ -z $BUILD_REPORTS_LOC ]; then; BUILD_REPORTS_LOC=~/$PROJECT/build-reports/; fi
+    if [ -z $PROJECT_PATH ]; then; PROJECT_PATH=~/$PROJECT/; fi
+    if [ -z $BUILD_TYPE ]; then; BUILD_TYPE=sphinx; fi
+
+    build-sphinx-project(){
+        project=$1; shift
+        builds=$@
+
+        cd $PROJECT_PATH/$project
+        for argument in $builds; do
+            case "$argument" in
+                ( clean ) make clean >/dev/null 2>&1 ;;
+                ( html ) make html >>$BUILD_REPORT 2>&1 ;;
+                ( latex ) make latex >>$BUILD_REPORT 2>&1 ;;
+                ( epub ) make epub >>$BUILD_REPORT 2>&1 ;;
+                ( sffms ) make sffms >>$BUILD_REPORT 2>&1 ;;
+            esac
+            case "$argument" in
+                ( clean ) notify "$project build directory removed."; exit 0 ;;
+                ( * ) notify "$project project build ($argument) is complete. See \"$BUILD_REPORT\" for details." ;;
+            esac
+        done
+        echo $project built: $BUILD_REPORT
+    }
+
+    build-wiki(){
+        shift; commit_message=$@
+
+        cd $PROJECT_PATH
+        if [ "`git ls-files -d | wc -l`" -gt "0" ]; then; git rm --quiet `git ls-files -d`; fi ; git add .
+        git commit -m "$commit_message"  >>$BUILD_REPORT 2>&1
+        git pull --rebase >>$BUILD_REPORT 2>&1
+        git push >>$BUILD_REPORT 2>&1
+
+        case $? in
+            ( 0 ) notify "build ($commit_message) is complete. See \"$BUILD_REPORT\" for details.";;
+            ( * ) notify "build ($commit_message) is complete, with errors. See \"$BUILD_REPORT\" for details.";;
+        esac
+    }
+
+    # stl [job|personal] make (queue items) {stuff to go to make process}
+    # if wiki: $@ = commit message;; if sphinx: build types, default html
+
+    for item in $queue; do
+        BUILD_REPORT=$BUILD_REPORTS_LOC`date +%s`-$item.txt; touch $BUILD_REPORT
+        case "$BUILD_TYPE" in
+            ( sphinx ) build-sphinx-project $item $@ ;;
+            ( wiki ) build-wiki $item $@ ;;
+        esac
+    done
+}
+
+######################################################################
+
+personal-worker(){
+    PROJECT=projects
+    LOG_TAG=personal
+
+    for argument in $ARG; do
+        case "$argument" in
+            ( ae ) queue=($queue al-edarian); shift ;;
+            ( admin ) queue=($queue cyborg-admin); shift ;;
+            ( institute ) queue=($queue institute); shift ;;
+            ( stl ) queue=($queue stl);
+                    WC_PATH=~/projects/stl/docs/source
+                    PROJECT_PATH=~/projects/stl/docs
+                    shift ;;
+            ( wiki ) queue=($queue wiki);
+                     PROJECT_PATH=~/wiki/
+                     WC_PATH=$PROJECT_PATH
+                     BUILD_TYPE=wiki; EXTENSION=mdwn
+                     shift ;;
+            ( * ) # continue silently ;;
+        esac
+    done
+
+    action-handler $@;
+}
+
+job-worker(){
+    PROJECT=job
+
+    for argument in $ARG; do
+        case "$argument" in
+            ( * ) ;;
+        esac
+    done
+
+    action-handler $@;
+}
+
+###################################
+
+main(){
+   ARG=($@)
+
+   case $ARG[2] in
+       ( make ) ACTION=make ;;
+       ( stat* ) ACTION=stats ;;
+       ( entry* ) ACTION=entry ;;
+       ( report ) ACTION=report ;;
+       ( * ) ;;
+   esac
+
+   domain=$ARG[1]
+   ARG[1]=()
+
+   case $domain in
+       ( personal ) personal-worker $ARG; exit 0 ;;
+       ( job ) job-worker $ARG; exit 0 ;;
+       ( * ) echo "help crap"; exit 1 ;;
+   esac
+}
+main $@

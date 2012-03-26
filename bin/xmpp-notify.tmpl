@@ -1,0 +1,45 @@
+#!/usr/bin/perl
+
+# sends the contents of the command line argument to a JID specified by $recipent.
+#
+# usage: bash$ xmpp-notify "contents of message"
+#
+# code shamelessly stolen (and adapted somewhat) from:
+# http://stackoverflow.com/questions/170503/commandline-jabber-client/170564#170564
+
+use strict;
+use warnings;
+use Net::Jabber qw(Client);
+
+my $server = "SERVER";
+my $port = "5222";
+my $username = "USERNAME";
+my $password = "PASSWORD";
+my $resource = "xmpp-notify";
+my $recipient = "TARGET";
+
+my $clnt = new Net::Jabber::Client;
+
+my $status = $clnt->Connect(hostname=>$server, port=>$port);
+
+if (!defined($status)) {
+    die "Jabber connect error ($!)\n";
+}
+
+my @result = $clnt->AuthSend(username=>$username,
+        password=>$password,
+        resource=>$resource);
+
+if ($result[0] ne "ok") {
+    die "Jabber auth error: @result\n";
+}
+
+foreach my $to ($recipient) {
+    $clnt->MessageSend(to=>$to,
+            subject=>"",
+            body=>@ARGV,
+            type=>"chat",
+            priority=>10);
+}
+
+$clnt->Disconnect();

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+echo "This script will configure the ./bin/xmpp-notify script for your use."
+
+echo "JID (i.e. google talk/jabber/xmpp) where you want to receive notifications:"
+read target
+echo
+
+echo "Username for the Bot's JID:"
+read username
+echo
+
+echo "Server for the Bot's JID:"
+read server
+echo
+
+echo "The password for the Bot's JID:"
+read password
+echo
+
+echo "Configuring and testing ./xmpp-notify..."
+
+SAFE_TARGET=`echo $target | sed 's/@/\\\\\\\@/'`
+
+rm -f ./bin/xmpp-notify
+sed -e "s/TARGET/"$SAFE_TARGET"/g" -e "s/USERNAME/"$username"/g" -e "s/SERVER/"$server"/g" -e "s/PASSWORD/"$password"/g" ./bin/xmpp-notify.tmpl >./bin/xmpp-notify
+chmod +x ./bin/xmpp-notify
+
+./bin/xmpp-notify "If you received this message, 'xmpp-notify' is properly configured"
+
+echo
+echo "Complete. If you didn't receive a message at the '$target' Jabber/XMPP account"
+echo "and you have a working network connection, then something may be misconfigured."
+echo "Run this script to try again."
