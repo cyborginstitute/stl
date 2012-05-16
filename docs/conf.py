@@ -14,7 +14,7 @@ extensions = ['sphinx.ext.todo']
 templates_path = ['.templates']
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = '.txt'
 
 # The master toctree document.
 master_doc = 'index'
@@ -35,8 +35,11 @@ pygments_style = 'sphinx'
 
 # -- Options for HTML output ---------------------------------------------------
 
+git_name = 'cyborg-admin'
+html_theme_options = { 'project': git_name }
+
 html_theme = 'cyborg'
-html_theme_path = ['.themes']
+html_theme_path = ['themes']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
