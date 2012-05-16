@@ -2,7 +2,14 @@
 Code and Organization
 =====================
 
-EDIT file
+.. note:: 
+
+   This document explains my rationale for writing the zsh version of
+   ``stl`` in the way that I did. While this document may be useful
+   for you as a legend for understanding this script, the truth is
+   that the zsh ``stl`` is only useful as a prototype, and needs to be
+   rewritten in a more modular and maintainable system. -- `tychoish
+   <http://tychoish.com/>`_
 
 Coding Goals
 ------------
@@ -25,32 +32,30 @@ The goals in writing this script were:
 
 - To set good defaults and use them when possible. This both makes the
   script easier to set up, and also makes it easier to add new
-  projects very quickly. The assumption is that you have a
-  "``~/projects``" directory beneath which are a collection of
-  projects published/managed by Sphinx, with ``rst`` extensions. the
+  projects. The assumption is that you have a "``~/projects``"
+  directory beneath which are a collection of projects
+  published/managed by Sphinx, with ``rst`` (or .txt) extension. the
   script can do other things, but that takes a (*bit*) more work.
 
 - To run quickly. While there's a lot of crude elements and
   inefficiencies (particularly around blunt use of loops and not
-  dropping exiting if the options are verifiable invalid,) it rarely
-  takes very long to run, and is able to finish quickly. This is
-  probably largely the result of being relatively "pure" zsh. There's
+  exiting if the options are verifiable invalid,) it rarely takes very
+  long to run, and is able to finish quickly. There are minimal
+  external dependencies, and most of the script stays in ZSH. There's
   some use of the :command:`date` command, and a call to :command:`wc`
   to return word counts, and two "``ifconfig | grep``" calls to see if
-  networking is up to configure the notification. In all it's really
-  straight forward.
+  networking is up to configure the notification.
 
 File Organization
 -----------------
 
-``stl`` begins with a number of generic functions that are reused
-throughout the script, and ends with a number of deployment specific
-functions that you'll need to customize so that the script knows where
-to find your files and work. See the :ref:`previous section
-<stl-customization>` for more information on how to customize the
-script for personal usage, and the :ref:`code path's <stl-code-paths>`
-section for more information on how the interpreter processes the
-code.
+``stl`` begins with a number of reusable generic functions, and ends
+with a number of deployment specific functions that you'll need to
+customize so that the script knows where to find your files and
+work. See the :ref:`previous section <stl-customization>` for more
+information on how to customize the script for personal usage, and the
+:ref:`code paths <stl-code-paths>` section for more information on
+how the interpreter processes the code.
 
 This section provides an inventory, as they appear in the file, of
 each function and it's general purpose.
@@ -78,8 +83,8 @@ each function and it's general purpose.
   command.
 
 - ``action-handler`` is a simple function that holds a case statement
-  that calls one of the other functions that does the actual work of
-  the script.
+  that calls another functions that does the actual work of the
+  script.
 
 - ``stats-log`` allows users to create a number of entries in the log
   with arbitrary messages, to provide the build reports and word
@@ -101,13 +106,15 @@ each function and it's general purpose.
   value written in the "``/tmp/$PROJECTS-stats/`` folder.
 
 - ``compile-project`` triggers a rebuild or build of the project. It
-  supports Sphinx (including ssfms,) and Ikiwiki using git. The
+  supports Sphinx (including `sffms`_,) and Ikiwiki using git. The
   function writes the output of the build process to files in the
   "``/tmp/$PROJECT-stats``" folder, and logs completion via the
   ``notify`` function.
+
+  .. _sffms: http://pypi.python.org/pypi/sffms/
 
 - ``domain-selector`` is a function that sets sub-project specific
   variables before calling the "``action-handler``" function.
 
 - ``main`` the primary function of the code, and the only function
-  that is called directly from the main body of the script.
+  that the main body of the script calls directly.

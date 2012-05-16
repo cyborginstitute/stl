@@ -2,12 +2,10 @@
 ``stl`` Internals
 =================
 
-EDIT file
-
 Synopsis
 --------
 
-This document provides an overview of the logic of the program, and
+This document provides an overview of the logic of ``stl``, and
 discusses the code on a per-function basis, to provide a very fine
 grained idea of how the script operates. This information should be
 helpful if you wish to extend and add features to ``stl``, or if you
@@ -21,7 +19,7 @@ Code Paths
 
 Beginning in the ``main()`` function (at the end of the file,) the
 first argument specifies the "domain," and the second argument
-specifies one of the program's of "workers." The workers setting sets
+specifies one of the program's of "workers." The worker sets
 the global ``ACTION`` variable, and the "domain" setting calls one of
 the "domain-selector" functions.
 
@@ -91,13 +89,13 @@ described below.
    .. note::
 
       Multiple project building does not work as efficiently as you'd
-      expect: if there are too many overrides to ``PROJECT_PATH``,
-      and some other settings, the behavior is erratic.
+      expect: if you override ``PROJECT_PATH``, for instance, the
+      behavior is erratic.
 
       Ideally, the domain selectors should declare a configuration
-      array rather so that the builder and other operations can
-      itterate over entire configuration objects rather than a list of
-      sub-project names.
+      array rather than a simple variable so that the builders and
+      other operations can itterate over entire configuration objects
+      rather than a list of sub-project names.
 
    .. describe:: build-sphinx-project
 
@@ -122,10 +120,10 @@ described below.
 
       - Change directory to the ``PROJECT_PATH``
 
-      - In git's staging area, remove all files that were previously
-        in the repository that have been removed from the file
-        system. Add all uncommitted changes to the repository's
-        staging area.
+      - In git's staging area, remove all files had existed in the
+        repository, but have been removed from the file system since
+        the last commit. Then, add all uncommitted changes to the
+        repository's staging area.
 
       - Commit all changes, using the remainder of the argument string
         as the commit message.
@@ -251,8 +249,8 @@ described below.
         content but the reassignment adds clarity.
 
       The function begins by making the directory
-      ``/tmp/$PROJECT-stats/`` if it doesn't already exists. The cache
-      is stored here and this allows independent caches for each
+      ``/tmp/$PROJECT-stats/`` if it doesn't already exists. ``stl``
+      stores its cache here, which allows independent caches for each
       ``domain``. The cache is a directory of files named
       "``$project``-``$type``.
 
@@ -285,10 +283,10 @@ described below.
 
          While it may be possible to make the entire process more
          efficient by checking the cached value, earlier in the code
-         path, the savings are minimal because ``stl`` still has to
-         run all of the same expensive operations (checking the new
-         word count, etc.) the same number of times to ensure that the
-         value hasn't changed.
+         path, the savings are minimal because ``stl`` would still
+         have to run all of the same expensive operations (checking
+         the new word count, etc.) the same number of times to ensure
+         that the value hasn't changed.
 
 .. describe:: stats-log
 
@@ -364,8 +362,7 @@ Additionally the ``notify-init`` function, which appears throughout
    - When the Wireless (i.e. ``wlan0``) interface does not exist,
      *and* the ``eth0`` interface does not have an IP address, define
      ``notify`` as a function calls ``log-file-notify`` passing
-     ``log-file-notify`` all of the arguments that ``notify`` was called
-     with.
+     ``log-file-notify`` all arguments.
 
    - If the ``log`` file in the cache
      (i.e. "``/tmp/$PROJECT-stats/log``") exists, then ``notify`` is a

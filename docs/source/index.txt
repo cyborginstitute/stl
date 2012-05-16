@@ -2,8 +2,6 @@
 Personal Status Logger (stl)
 ============================
 
-EDIT file
-
 Contents
 --------
 
@@ -47,3 +45,12 @@ many cases ``stl`` is useful as-is; however, this site provides an
 in-depth over view over stl and suggestions for customizing and
 extending its functionality to collect data and provide an interface
 for *your* projects.
+
+.. note::
+
+   ``stl`` is one of those projects that works pretty well, but is
+   difficult to maintain is not particularly flexible for a few
+   reasonably systemic reasons. I'm presenting ``stl`` because I think
+   personal logging and record keeping are valuable and I'm interested
+   in developing more useful versions of ``stl`` in the
+   future. --`tychoish <http://tychoish.com>`_
