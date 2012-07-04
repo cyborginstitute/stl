@@ -35,7 +35,7 @@ pygments_style = 'sphinx'
 
 # -- Options for HTML output ---------------------------------------------------
 
-git_name = 'cyborg-admin'
+git_name = 'stl'
 html_theme_options = { 'project': git_name }
 
 html_theme = 'cyborg'
