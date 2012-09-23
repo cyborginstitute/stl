@@ -6,6 +6,7 @@ Contents
 --------
 
 .. toctree::
+   :maxdepth: 1
 
    usage
    code
@@ -29,12 +30,18 @@ Overview
 --------
 
 ``stl`` (i.e. "status logger") is a tool for managing, maintaining,
-and logging work for writers. It provides a unified interface around
-logging word count information, as well as compiling projects, and
-other related functionality. If you publish text using software such
-as `ikiwiki <http://ikiwiki.info/>`_, `Sphinx
-<http://sphinx.pocoo.org/>`_, or using ad hoc Makefiles, ``stl`` may
-be exactly the tool you need to:
+and logging work for writers. With ``stl`` you can track the aggregate
+word count of multi-file writing projects. Furthermore, ``stl``
+include tools to build a more complete and more automated log of
+personal work and activity.
+
+The initial implementation (circa Fall/Winter 2011) of ``stl`` was an
+over-complex shell script that was neither easy to maintain or
+particularly robust, that code, is still available in the git
+repository. The second implementation, in Python, is more modular, and
+significantly more flexible.
+
+``stl`` may be exactly the tool you need to:
 
 - Record, manage, and view the output of your build tools (i.e. build
   reports.)
@@ -45,18 +52,40 @@ be exactly the tool you need to:
 
 - Wrap your build tools to provide a more consistent interface.
 
-The script and examples are written in `zsh <http://www.zsh.org/>`_ as
-of early 2012, but may be rewritten in Python in the near future. In
-many cases ``stl`` is useful as-is; however, this site provides an
-in-depth over view over stl and suggestions for customizing and
-extending its functionality to collect data and provide an interface
-for *your* projects.
+This site documents both the use and the internal operation of
+``stl``, including the initial implementation for posterity and the
+current implementation. 
 
-.. note::
+Future Development
+------------------
 
-   ``stl`` is one of those projects that works pretty well, but is
-   difficult to maintain is not particularly flexible for a few
-   reasonably systemic reasons. I'm presenting ``stl`` because I think
-   personal logging and record keeping are valuable and I'm interested
-   in developing more useful versions of ``stl`` in the
-   future. --`tychoish <http://tychoish.com>`_
+- Better validation of inputs. 
+
+- More clear interface for configuring outputs.
+  
+- Distribution in the Python Package Index.
+  
+- A daemon mode. 
+  
+- More granular caching, potentially caching word counts on a per-file
+  basis rather than forcing repeated ``wc``. Potentially using
+  ``make`` or ``ninja``.
+
+- Further decouple and create a more modular notification
+  system. Currently you can use ``stl`` to send notifications to the
+  command-line, to log files, and/or to `Emacs <>`_, via `sauron-mode
+  <http://>`_.
+
+  
+Legacy Documentation
+--------------------
+
+The following documentation reflects the *prior* implementation of
+``stl``, and remains for historical and archival reasons. 
+
+.. toctree::
+   :maxdepth: 1
+
+   zsh-usage
+   zsh-code
+   zsh-internals

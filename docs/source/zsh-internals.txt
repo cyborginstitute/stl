@@ -1,0 +1,398 @@
+==============================
+``zsh stl`` Internals (Legacy)
+==============================
+
+.. note:: 
+   
+   This documentation reflects the legacy implementation of
+   ``stl``. See :doc:`/internals` for the current implementation.
+
+Synopsis
+--------
+
+This document provides an overview of the logic of ``stl``, and
+discusses the code on a per-function basis, to provide a very fine
+grained idea of how the script operates. This information should be
+helpful if you wish to extend and add features to ``stl``, or if you
+are having a problem and want to know about the underlying operation
+of the script.
+
+.. _stl-code-paths:
+
+Code Paths
+----------
+
+Beginning in the ``main()`` function (at the end of the file,) the
+first argument specifies the "domain," and the second argument
+specifies one of the program's of "workers." The worker sets
+the global ``ACTION`` variable, and the "domain" setting calls one of
+the "domain-selector" functions.
+
+Each domain selector sets the default ``PROJECT`` and optionally
+``LOG_TAG`` variables. Then, the selector loops over the remaining
+elements in the argument string to extract and set variables for each
+sub-project that you want to track with ``stl``. While there are some
+global variables, the main operation of the domain-selector function
+adds the sub-projects to a ``queue`` variable that holds an
+array. When the selectors have set the all required variables for the
+project, and then call the ``action-handler`` function.
+
+``action-handler`` calls the appropriate worker function based on the
+value of the ``ACTION`` variable, and passes each worker the full
+argument string.
+
+Abstractly, worker functions:
+
+- begin by calling the ``notify-init`` function. ``notify-init`` is
+  the first function in the file.
+
+- Sets required variables if they are heretofore unset.
+
+- Sets additional values from the argument string, if needed.
+
+- Performs the required work.
+
+- Sends output by way of the ``notify()`` function provided by the
+  ``notify-init`` function.
+
+- Exits.
+
+``stl`` contains the following worker functions with operations
+described below.
+
+.. describe:: compile-project
+
+   ``compile-project`` provides the procedure to build a project.
+
+   The function begins by running ``notify-init`` and setting three
+   variables if they are unset:
+
+   - ``BUILD_REPORTS_LOC`` which specifies the directory where the
+     script writes the output of the build.
+
+   - ``PROJECT_PATH`` which sets the path of the project to
+     "``~/$PROJECT``" unless overridden. Overrides of this variable
+     typically affect the ability of ``stl`` to run multiple stats in
+     one invocation.
+
+   - ``BUILD_PATH`` specifies either "``sphinx``" or "``wiki``", with
+     ``sphinx`` being the default. The ``wiki`` option, works with
+     Ikiwiki instances running in git.
+
+   Then, there are two embeded functions (described below) for
+   building both types of project, followed by a ``for`` loop that
+   builds all projects specified in the ``queue``.
+
+   The loop begins by declaring and then creating the file for the
+   ``BUILD_REPORT`` which consists of: the path from
+   ``BUILD_REPORTS_LOC``, a 32-bit UNIX timestamp, the name of the
+   project, and a .txt extension. The loop also contains a ``case``
+   statement that calls an embeded function with the required
+   arguments to build the project. When ``stl`` reaches the end of the
+   ``queue``, the program exits.
+
+   .. note::
+
+      Multiple project building does not work as efficiently as you'd
+      expect: if you override ``PROJECT_PATH``, for instance, the
+      behavior is erratic.
+
+      Ideally, the domain selectors should declare a configuration
+      array rather than a simple variable so that the builders and
+      other operations can itterate over entire configuration objects
+      rather than a list of sub-project names.
+
+   .. describe:: build-sphinx-project
+
+      This function assumes that your Sphinx projects use the default
+      Makefile provided by ``sphinx-quickinstall`` or similar.
+
+      The main body of this function provides a for-loop around a case
+      statement for each build type to call ``make`` as many times as
+      necessary. When a build complete, the function calls the
+      ``notify`` function to log the completion of the new build.
+
+      The function itself expects that its enclosing function will
+      loop over it several time for each project, and is simple as a
+      result.
+
+   .. describe:: build-wiki
+
+      ``build-wiki`` works for any Ikiwiki that use git as the storage
+      system; however, it's general enough to use as the basis for any
+      system that controls the build in a "post-commit" or
+      "post-update" hook. The procedure is:
+
+      - Change directory to the ``PROJECT_PATH``
+
+      - In git's staging area, remove all files had existed in the
+        repository, but have been removed from the file system since
+        the last commit. Then, add all uncommitted changes to the
+        repository's staging area.
+
+      - Commit all changes, using the remainder of the argument string
+        as the commit message.
+
+      - Pull in new changes using the "``--rebase``" option from the
+        default remotes.
+
+      - Push all changes to the default remote repositories.
+
+      When the procedure is complete, the function calls the
+      ``notify`` function to log the completion of the build.
+
+.. describe:: stats-base
+
+   ``stats-base`` begins by calling the ``notify-init`` function, and
+   setting four variables if they are unset:
+
+   - ``BUILD_REPORTS_LOC`` which specifies the directory where the
+     script writes the output of the build.
+
+   - ``PROJECT_PATH`` which sets the path of the project to
+     "``~/$PROJECT``" unless overridden. Overrides of this variable
+     typically affect the ability of ``stl`` to run multiple stats in
+     one invocation.
+
+   - ``DATE_OUTPUT_FORMAT`` Specifies a date output string used in the
+     log messages when reporting the last build time. Translates the
+     UNIX-timestamp into something readable. The default value is: ::
+
+          %A %B %d, %Y (%I:%m %p)
+
+   - ``EXTENSION`` which sets the file extension of the source
+     files. The default value is ``rst``.
+
+   Then a ``for`` iterates over the remaining arguments in the
+   function, and adds values to an ``outputs`` array in a ``case``
+   statement. Possible settings here, are:
+
+   - ``wc``, ``word``, or ``words``, adds a word count to the output
+     queue.
+
+   - ``build`` or ``builds`` adds a report of the last completed build
+     for which a build report exists.
+
+   - ``force`` which sets the "``FORCE``" environment variable. In the
+     default operation ``stats-base`` will not output any data unless
+     it has changed from the last time the operation ran. ``force``
+     overrides this.
+
+   There is one embeded function at this point ("``reporter``"
+   documented below that provides a simple way for the main work of
+   the function to pass information to the ``notify`` function when
+   (and only when) there is something to report.
+
+   The main work of the function occurs in a nested ``for`` loop. The
+   outer loop, iterates over the items in the ``queue`` array. It
+   begins by setting the ``WC_PATH`` variable if it isn't already
+   set (the default value, which works great for Sphinx projects is
+   ``~/$PROJECT_PATH/$item/source/`` where ``$item``is the iterated
+   member of the ``queue``.
+
+   .. note::
+
+      Again there are limitations to this method, when overloading the
+      "``WC_PATH`` variable with running through the ``queue`` loop
+      more than once. Although it's a bit more flexible than the
+      ``compile-function`` behavior the implementation is still
+      flawed.
+
+      Ideally, the domain selectors should declare a configuration
+      array rather so that the builder and other operations can
+      itterate over entire configuration objects rather than a list of
+      sub-project names.
+
+   The second loop, iterates over the contents of the ``outputs``
+   variable, and contains a case statement. At the present time, the
+   only stats are "word counts" (``wc``) that provide a count of the
+   words in the project and "build reports" (``build``) that provide a
+   note regarding the latest recorded build of the project.
+
+   By adding casses to the statement here and at the beginning of the
+   ``stats`` function it's relatively easy to add different type of
+   statistics reporting to ``stl``.
+
+   The cases in this inner loop, sets two variables:
+
+   - ``query`` is effectively a "lambda" function, stored in a
+     variable, enclosed in backtics (i.e. "`````"), that calculates
+     the total word count or the date of the relevant build.
+
+   - ``message`` which constructs the message that is ultimately
+     passed to ``notify`` and sent to the log.
+
+   Finally, each inner-loop case calls the ``reporter`` function with
+   four arguments. Continue to read the documentation of the reporter
+   function and its use.
+
+   .. describe:: report
+
+      The ``reporter`` function ensures that ``stl`` logs only if the
+      value of the statistic has changed since the last time the
+      function ran, or the last time the function ran with a new
+      value. Because it caches changed values in ``/tmp`` the stl
+      will always report all statistics once following system reboot.
+
+      The function begins by setting more readable variable names for
+      the four arguments:
+
+      - ``type`` holds to the kind of build (``outputs`` from the
+        ``stats-base`` function.) ``type`` identifies the statistic in
+        the cache.
+
+      - ``project`` holds to the sub project, and also identifies the
+        statistic in the cache. Do not confuse ``project`` with the
+        global ``PROJECT`` variable, which is also used here.
+
+      - ``data`` holds the value of the statistic that ``stats-base``
+        reports.
+
+      - ``message`` holds the message that will passed to
+        ``notify``. In most cases, this actually overwrites the
+        ``message`` variable which already exists with the same
+        content but the reassignment adds clarity.
+
+      The function begins by making the directory
+      ``/tmp/$PROJECT-stats/`` if it doesn't already exists. ``stl``
+      stores its cache here, which allows independent caches for each
+      ``domain``. The cache is a directory of files named
+      "``$project``-``$type``.
+
+      The main work of this function is in a 3-part ``if``
+      statement.
+
+      - When ``FORCE`` equals ``1``, the first part, passes the
+        ``message`` variable to the ``notify`` function .
+
+      - When the cache for this static (``type``) doesn't exist for
+        this project, the second part writes the value of ``data`` to
+        the appropriate location in the cache.
+
+      - When the value of ``data`` is different from the value in the
+        cache, the final part:
+
+        - Removes the existing value from the cache,
+
+        - creates a new cached value, and
+
+        - passes the ``message`` to the ``notify`` function which logs
+          the changed statistic.
+
+      There is no ``else`` statement, which would cover the case where
+      the value in the cache is equal to the most recent value
+      measured. This is likely the most common case. In this case
+      ``stl`` outputs nothing, and continues running.
+
+      .. note::
+
+         While it may be possible to make the entire process more
+         efficient by checking the cached value, earlier in the code
+         path, the savings are minimal because ``stl`` would still
+         have to run all of the same expensive operations (checking
+         the new word count, etc.) the same number of times to ensure
+         that the value hasn't changed.
+
+.. describe:: stats-log
+
+   This simple function allows users to add arbitrary messages to
+   their log files (by way of ``notify``). The function begins by
+   calling ``notify-init``, setting the "``type``" variable, and
+   cleaning up the array held by the ``ARG`` variable.
+
+   Next, an ``if`` statement detects an error condition if
+   ``stats-log`` is running while ``notify`` is not in "log-file"
+   mode.
+
+   Finally, a ``case`` statement passes formatted messages to
+   ``notify`` depending on the value of ``type``. Current types
+   include: ``start`` for "clocking in," ``stop`` for "clocking out,"
+   and ``note`` for inserting arbitrary messages into the log.
+
+   This function returns an error if called with an unknown ``type``
+   value.
+
+.. describe:: build-report
+
+   The build report function opens the most recent saved record of a
+   build (as created by all invocations of the ``compile-project``
+   function, and displays them in the specified format.
+
+   The function begins by calling ``notify-init`` and setting the
+   standard "``BUILD_REPORTS_LOC`` variable if it not already set, and
+   also setting the ``interface`` variable, which controls how the
+   value is output.
+
+   The main operation of this function occurs within a ``for`` loop
+   that iterates over members of the ``queue``. The loop begins by
+   declaring the ``LAST_LOG`` variable, which identifies the relevant
+   build report for the current member of the ``queue``. Then a case
+   statement, selects the interface and passes ``LAST_LOG`` to this
+   interface. If an interface case does not exist, the case statement
+   produces an error and exits.
+
+   There are no known limitations to the ability of this function to
+   handle multiple projects in one invocation, beyond the limitations
+   created by interfaces themselves, provided that you only use one
+   interface.
+
+Additionally the ``notify-init`` function, which appears throughout
+``stl``, has the following operation:
+
+.. describe:: notify-init
+
+   Many functions within ``stl`` call ``notify-init``. The main
+   purpose of this function is to determine when to log messages to
+   the log file, and when to log messages by way of the xmpp bot. It
+   accomplishes this by creating the ``notify`` according to the
+   configuration and the current environment in which ``stl`` runs.
+
+   The function begins with a ``case`` statement. If the first
+   argument to ``notify-init`` (accessed by way of the ``output``
+   action handler,) is "``xmpp``",  then this statement removes the
+   "``/tmp/$PROJECT-stats/log``" file. If the first argument to
+   ``notify-init`` is "``logfile``" then this statement creates this
+   file. If neither "``xmpp``" nor "``logfile``" is the first argument
+   then the function continues.
+
+   Next, ``notify-init`` sets "``LOG_TAG``" to the value of
+   ``PROJECT`` if ``LOG_TAG`` is empty. Then, it creates the
+   "``log-file-notify``" function, which defines the log-file
+   behavior, documented below.
+
+   Then a 3-part ``if`` statement defines the ``notify``
+   function. This sub function is then used throughout ``stl``. The
+   conditions are:
+
+   - When the Wireless (i.e. ``wlan0``) interface does not exist,
+     *and* the ``eth0`` interface does not have an IP address, define
+     ``notify`` as a function calls ``log-file-notify`` passing
+     ``log-file-notify`` all arguments.
+
+   - If the ``log`` file in the cache
+     (i.e. "``/tmp/$PROJECT-stats/log``") exists, then ``notify`` is a
+     function that calls ``log-file-notify`` passing
+     ``log-file-notify`` all of the arguments that ``notify`` was
+     called with.
+
+   - In all other cases, the ``notify`` function sends notifications
+     as an instant message to the XMPP interface. It uses the
+     "``xmpp-notify``" script included in the distribution with
+     ``stl``.
+
+     ``xmpp-notify`` is a simple Perl script that sends it's argument
+     string to a default XMPP address, using account credentials
+     declared in that file.
+
+   Finally the function ends, with a conditional that sends a
+   notification if the notification type has changed or been updated
+   as a result of the initial case statement.
+
+   .. describe:: log-file-notify
+
+      The log-file-notify script performs the following operations:
+
+      - touches the ``~/$PROJECT/stats.log`` files and
+
+      - outputs an "``[HH:MM]``" time stamp followed by the
+        message to the log file.
