@@ -7,7 +7,7 @@ SPHINXBUILD   = sphinx-build
 PAPER	      =
 BUILDDIR      = build
 
-# 
+#
 # Publication system
 #
 
@@ -21,8 +21,9 @@ $(BUILDDIR)/latex/stl.pdf:$(BUILDDIR)/latex/stl.tex
 $(BUILDDIR)/publish/stl.epub:$(BUILDDIR)/epub/PersonalStatusLoggerstl.epub
 	cp $< $@
 $(BUILDDIR)/publish:$(BUILDDIR)/dirhtml
-	mkdir -p $@ 
+	mkdir -p $@
 	cp -R $</* $@
+	touch $@
 $(BUILDDIR)/publish/stl.pdf:$(BUILDDIR)/latex/stl.pdf
 	cp $< $@
 
