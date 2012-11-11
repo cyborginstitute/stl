@@ -27,4 +27,7 @@ $(BUILDDIR)/publish:$(BUILDDIR)/dirhtml
 $(BUILDDIR)/publish/stl.pdf:$(BUILDDIR)/latex/stl.pdf
 	cp $< $@
 
+clean: 
+	rm -rf $(BUILDDIR)/*
+
 include makefile.docs
