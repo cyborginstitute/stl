@@ -2,3 +2,83 @@
 ``stl`` Manual
 ==============
 
+Synopsis
+--------
+
+``stl`` is a command line word count tool for projects. :doc:`wc_track
+<wc_track>` provides a more consistent interface for this word count
+functionality, and wraps the operation of ``stl``. Use the ``stl``
+module as a starting point for adding additional data collection
+modules to the ``stl`` system.
+
+Options
+-------
+
+.. program:: stl
+
+.. option:: --help, -h
+
+   Returns a brief help message regarding available options and output.
+
+.. option:: --target <daemon>, -t <daemon>
+
+   For users that run multiple named ``emacs`` daemon instances, this
+   option allows you to send the :term:`Sauron` notification to a
+   specific named instances. Chosen from a list of daemons defined in
+   ``sauron.py``.
+
+.. option:: --project <name>, -p <name>
+
+   A simple, human digestible name for the project, used in
+   notifiaction and logging output.
+
+.. option:: --directory <directory>, -d <directory>
+
+   The top-level path of the project. Used for word counting
+   purposes.
+
+.. option:: --extension <extension>, -e <extension>
+
+   The extension of the project files. ``stl`` ignores all files with
+   a different extension in the :option:`--directory`. The default
+   value is ``txt`` unless otherwise specified.
+
+.. option:: --quiet, -q
+
+   Suppress output on the command line. Disabled by default.
+
+.. option:: --force, -f
+
+   By default ``stl`` caches a copy of the word count for each project
+   in the ``/tmp/stl/`` directory. If you pass :option:`--force`,
+   ``stl`` will log and notify on all word-count events *even if* the
+   value has not changed since the last time ``stl`` ran.
+
+.. option:: --logfile <path>, -l <path>
+
+   A path to the logfile. By default there is no logfile.
+
+Use
+---
+
+On the command line, an invocation of ``stl`` might resemble the
+following:
+
+.. code-block:: sh
+
+   stl --project rhizome --directory ~/wikish/rhizome/ --extension mdwn --logfile ~/stl.log
+
+Consider the following section from :doc:`wc_track <wc_track>`, that
+wraps ``stl``:
+
+.. code-block:: python
+
+   import stl
+
+   stl.generate_events( project='rhizome',
+                        directory='~/wikish/rhizome/',
+                        target='hud',
+                        quiet=False,
+                        log='~/stl.log'
+                        force=True,
+                        extension='mdwn' )

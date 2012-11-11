@@ -2,3 +2,123 @@
 ``wc_track`` Manual
 ===================
 
+Synopsis
+--------
+
+``wc_track`` is a simplified wrapper around :doc:`stl </man/stl>` with
+:ref:`stored configuration <projects-config>`.
+
+Options
+-------
+
+.. option:: --help, -h
+
+   Returns a brief help message regarding available options and output.
+
+.. option:: --force, -f
+
+   By default :doc:`stl </man/stl>` caches a copy of the word count for each project
+   in the ``/tmp/stl/`` directory. If you pass :option:`--force`,
+   ``wc_track`` will log and notify on all word-count events *even if* the
+   value has not changed since the last time ``wc_track`` ran.
+
+.. option:: --project <project-name>, -p <p>
+
+   The name of the project. You must specify one of the projects
+   defined in the :ref:`projects-config` by the :py:data:`<project>`
+   value.
+
+   If you do not specify :option:`--project`, ``wc_track`` will report
+   all projects defined in the :ref:`projects structure
+   <projects-config>`.
+
+.. _projects-config:
+
+``projects`` Configuration
+--------------------------
+
+:py:data:`projects` is a python dict, that holds a number of dicts for
+each project that you want to report on with :doc:`stl
+<stl>`. Consider the following prototypical project configuration:
+
+.. code-block:: python
+
+   '<project>' : {
+       'path' : <path>
+       'target' : <string>
+       'emacs' : <bool>
+       'quiet' : <bool>
+       'log' : <path>
+       'ext' : <string>
+   }
+
+Consider the following documentation of each of these fields:
+
+.. py:data:: projects
+
+   Holds the name of the project. Used as :option:`stl --project`.
+
+.. py:data:: projects.'path'
+
+   Holds the path to the top level of the project. Used as
+   :option:`stl --directory`.
+
+.. py:data:: projects.'target'
+
+   Holds the name of the emacs instance to send the Sauron
+   notification. Used as :option:`sauron --target`.
+
+.. py:data:: projects.'emacs'
+
+   A Boolean value. If ``False``, this will disable output to emacs
+   and Sauron.
+
+.. py:data:: projects.'quiet'
+
+   A Boolean value. If true, will suppress all command line
+   output. Used as :option:`stl --quiet`.
+
+.. py:data:: projects.'log'
+
+   Holds the path of the log file to record output data. Used as
+   :option:`stl --log`.
+
+.. py:data:: projects.'ext'
+
+   Holds the extension of all project files, that :doc:`stl <stl>`
+   will measure. All files with different extensions ignored. Used as
+   :option:`stl --extension`.
+
+Use
+---
+
+At the system shell, invoke ``wc_track`` as in one of the following
+examples.
+
+.. code-block:: sh
+
+   wc_track
+   wc_track --project rhizome
+   wc_track -f --project rhizome
+
+Often it makes sense to run this program automatically using ``cron``
+or some other scheduling tool. Consider the following ``crontab``
+lines:
+
+.. code-block:: none
+
+   */2 9-18 * * 1-5             wc_track > /dev/null 2>&1
+   */2 * * * *                  wc_track > /dev/null 2>&1
+
+The first operation schedules ``wc_track`` to run every two minutes,
+between 9 am and 6 pm, Monday through Friday. The second operation
+runs ``wc_track`` every two minutes at all times.
+
+Typically there is no need to use ``wc_track`` from other Python
+scripts, and no interface for that; however, you may want to access
+the :ref:`projects structure <projects-config>` in another script as
+needed:
+
+.. code-block:: python
+
+   from wc_track import projects as wc_track_projects

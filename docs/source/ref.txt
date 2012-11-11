@@ -1,0 +1,18 @@
+======================
+Stats Logger Reference
+======================
+
+Glossary
+--------
+
+.. glossary:: 
+   :sorted: 
+
+   sauron
+      A notification system for emacs. See the `Sauron EmacWiki Page <http://www.emacswiki.org/emacs/Sauron>`_
+      for more information. The :doc:`sauron </man/sauron>` script,
+      included as a part of stl, provides a python and command line wrapper for
+      sending Sauron notifications by way of ``emacsclient``.
+
+Additional Reference
+--------------------

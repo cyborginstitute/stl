@@ -2,3 +2,61 @@
 ``lnote`` Manual
 ================
 
+Synopsis
+--------
+
+``lnote`` provides a simple way to add an arbitrary note to the log
+and notification system. While most of the information included in the
+``stl`` output log is automatically generated, ``lnote`` allows you to
+provide context, to make manual log analysis easier.
+
+Dependencies
+------------
+
+``lnote`` depends on the following components:
+
+- ``argparse``, part of the Python standard library as of 2.7, and
+  installable separately for some earlier versions.
+
+- ``socket``, part of the Python standard library, used to include the
+  hostname in the log output.
+
+- ``datetime``, part of the Python standard library, used to build
+  timestamps for log output.
+
+- :doc:`sauron </internals/sauron>`, to provide an interface to
+  `Sauron <http://www.emacswiki.org/emacs/Sauron>`_ by way of
+  ``emacsclient``.
+
+- :doc:`wc_track </internals/wc_track>`, to provide local
+  configuration information.
+
+Options
+-------
+
+.. program:: lnote
+
+.. option:: --help, h
+
+   Returns a brief help message regarding available options and output.
+
+.. option:: --target <daemon>, -t <daemon>
+
+   For users that run multiple named ``emacs`` daemon instances, this
+   option allows you to send the :term:`Sauron` notification to a
+   specific named instances. Chosen from a list of daemons named in
+   the :doc:`sauron </internals/sauron>` script.
+
+.. option:: --message <message>, -m <message>
+
+   A string containing the arbitrary message to add to the
+   notification.
+
+Use
+---
+
+A typical invocation of ``lnote`` resembles the following:
+
+.. code-block:: sh
+
+   lnote -t hud -m 'message here'

@@ -2,9 +2,16 @@
 Internal Details and Implementation
 ===================================
 
+Overview
+--------
+
+
+Programs
+--------
+
 .. toctree:: 
    
-   internals/sauron   
-   internals/stl   
-   internals/lnote
-   internals/wc_track
+   /internals/sauron   
+   /internals/stl   
+   /internals/lnote
+   /internals/wc_track

@@ -1,16 +1,17 @@
-=========================
-``stl`` Use and Operation
-=========================
+===============================
+Status Logger Use and Operation
+===============================
 
 Manual Pages
 ------------
 
-.. toctree:: 
-   
-   man/lnote
-   man/wc_track
-   man/sauron
-   man/stl
+.. toctree::
+   :maxdepth: 1
+
+   /man/lnote
+   /man/wc_track
+   /man/sauron
+   /man/stl
 
 See :doc:`/internals` for more information about the implementation
 of each component.
@@ -20,48 +21,47 @@ General Operation
 
 ``stl`` consists of three connected Python modules/scripts that you
 may use either independently or in conjunction. From the highest
-level, these programs are: 
+level, these programs are:
 
-- :doc:`sauron </sauron>`: A script that provides a wrapper around
+- :doc:`sauron </man/sauron>`: A script that provides a wrapper around
   emacsclient, and ethe emacs notification system `sauron
   </>`_. Supports multiple emacs clients running on a single
   system/user account, and does not require a `dbus`
   configuration. This provides a programatic interface for sauron-mode.
-  
-- :doc:`stl </stl>`: A script that provides a simple interface to
-  calculate and log word counts for multi-file projects. This script
-  does not store any information regarding projects or configuration. 
-  
-- :doc:`wc_track </wc_track>`: For running regularly as a cronjob,
-  ``wc_track`` stores the :var:`projects` variable that contains
-  per-project configuration, and several functions for automatically
-  running ``stl`` for each project. 
 
-- :doc:`lnote </lnote>`: A simple interactive script for creating
+- :doc:`stl </man/stl>`: A script that provides a simple interface to
+  calculate and log word counts for multi-file projects. This script
+  does not store any information regarding projects or configuration.
+
+- :doc:`wc_track </man/wc_track>`: For running regularly as a cronjob,
+  ``wc_track`` stores the :py:data:`projects` dict that contains
+  per-project configuration, and several functions for automatically
+  running ``stl`` for each project.
+
+- :doc:`lnote </man/lnote>`: A simple interactive script for creating
   arbitrary notes in the log to provide additional context.
 
 ``projects`` Configuration
 --------------------------
 
-The projects array mirrors 
+The ``projects`` dict in the :file:`wc_track` file, provides a way to
+pre-configure :file:`wc_track` as a wrapper around
+:file:`stl`. Consider the following basic setup: 
 
 .. code-block:: python
 
-   username = tychoish 
+   username = tychoish
 
    projects = {
-     'stl' : { 
+     'stl' : {
            'path' : '/home/' + username + '/projects/stl/docs/source/',
            'target' : 'projects',
            'emacs' : True,
-           'quiet' : True, 
+           'quiet' : True,
            'log' : '/home/' + username + '/projects/stats-' + socket.gethostname() + '.log',
            'ext': 'txt'
       },
     }
 
-The fields in the dictionary for each project mirror the options to
-:doc:`/stl` itself. 
-     
-Example Invocations
--------------------
+See :doc:`/man/wc_track` and :doc:`/internals/wc_track` for more
+information.

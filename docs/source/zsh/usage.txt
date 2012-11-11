@@ -6,7 +6,7 @@
 .. note:: 
    
    This documentation reflects the legacy implementation of
-   ``stl``. See :doc:`/usage` for the current implementation.
+   ``stl``. See :doc:`/use` for the current implementation.
 
 Synopsis
 --------

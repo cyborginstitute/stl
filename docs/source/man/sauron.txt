@@ -2,3 +2,74 @@
 ``sauron`` Manual
 =================
 
+.. note::
+
+   The ``sauron`` program is simply a symbolic link to
+   :py:mod:`sauron.py`, for more "native feeling" command line use.
+
+Synopsis
+--------
+
+``sauron`` is a Python module that provides an interface to `Sauron
+<http://www.emacswiki.org/emacs/Sauron>`_ via the command line and
+``emacsclient``. Sauron is a notification system for emacs. ``sauron``
+also provide a command line interface for sending messages to Sauron
+for use in other shell scripts.
+
+Options
+-------
+
+.. program::  sauron
+
+.. option:: --help, -h
+
+   Returns a brief help message regarding available options and output.
+
+.. option:: --priority <int>, -p <int>
+
+   Defines the priority of messages. Typically :term:`Sauron` ignores
+   all notification events with priority values lower than ``3``,
+   though users may configure other defaults.
+
+.. option:: --target <daemon>, -t <daemon>
+
+   For users that run multiple named ``emacs`` daemon instances, this
+   option allows you to send the :term:`Sauron` notification to a
+   specific named instances. Chosen from a list of daemons defined in
+   ``sauron.py``.
+
+.. option:: --source <source>, -s <source>
+
+   A short arbitrary string for use :term:`Sauron's <sauron>` ``Orig``
+   field.
+
+.. option:: --message <message>, -m <message>
+
+   A string containing the arbitrary message to add to the
+   notification.
+
+Use
+---
+
+A typical invocation from a system shell resembles the following:
+
+.. code-block:: sh
+
+   sauron -t hud -p 3 'This is the text of the message.'
+
+To send a Sauron notification from a Python module using ``sauron``,
+ensure that ``sauron.py`` is in your Python path, and then use code
+that resembles the following:
+
+.. code-block:: python
+
+   import sauron
+
+   message = sauron.NotificationMessage(source='system',
+                                        message='This is the text of the message.',
+                                        target='hud')
+
+   message.send()
+
+See the documentation of the :py:class:`sauron.NotificationMessage`
+class for more information about this interface.

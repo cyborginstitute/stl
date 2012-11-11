@@ -8,13 +8,29 @@ Contents
 .. toctree::
    :maxdepth: 1
 
-   usage
+   use
    code
    internals
    contribute
 
+Legacy Implementation
+---------------------
+
+The following documentation reflects the *prior* implementation of
+``stl``, and remains for historical and archival reasons.
+
+.. toctree::
+   :maxdepth: 1
+
+   zsh
+
 Resources
 ---------
+
+.. toctree::
+   :maxdepth: 1
+
+   ref
 
 - `stl git repository <http://git.cyborginstitute.net/?p=stl.git>`_
 - `stl on Github <https://github.com/tychoish/stl/>`_
@@ -54,38 +70,25 @@ significantly more flexible.
 
 This site documents both the use and the internal operation of
 ``stl``, including the initial implementation for posterity and the
-current implementation. 
+current implementation.
 
 Future Development
 ------------------
 
-- Better validation of inputs. 
+- Better validation of inputs.
 
 - More clear interface for configuring outputs.
-  
+
 - Distribution in the Python Package Index.
-  
-- A daemon mode. 
-  
+
+- A daemon mode.
+
 - More granular caching, potentially caching word counts on a per-file
   basis rather than forcing repeated ``wc``. Potentially using
   ``make`` or ``ninja``.
 
 - Further decouple and create a more modular notification
   system. Currently you can use ``stl`` to send notifications to the
-  command-line, to log files, and/or to `Emacs <>`_, via `sauron-mode
-  <http://>`_.
-
-  
-Legacy Documentation
---------------------
-
-The following documentation reflects the *prior* implementation of
-``stl``, and remains for historical and archival reasons. 
-
-.. toctree::
-   :maxdepth: 1
-
-   zsh-usage
-   zsh-code
-   zsh-internals
+  command-line, to log files, and/or to `Emacs
+  <http://www.gnu.org/software/emacs/>`_, via `sauron-mode
+  <http://www.emacswiki.org/emacs/Sauron>`_.

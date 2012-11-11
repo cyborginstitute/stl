@@ -1,0 +1,19 @@
+=============================
+Legacy ``zsh`` Implementation
+=============================
+
+Overview 
+--------
+
+Initially I implemented ``stl`` as a zsh script. These pages document
+that program and it's use and operation.
+
+Pages
+-----
+
+.. toctree::
+   :maxdepth: 4
+
+   /zsh/usage
+   /zsh/internals
+   /zsh/code
