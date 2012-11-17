@@ -9,7 +9,6 @@ Contents
    :maxdepth: 1
 
    use
-   code
    internals
    contribute
 

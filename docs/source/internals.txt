@@ -5,6 +5,26 @@ Internal Details and Implementation
 Overview
 --------
 
+After experiencing trouble with the integrated approach of the
+:doc:`zsh implementation </zsh>`, the current implementation takes a
+more modular approach.
+
+The two core components, :doc:`stl </internals/stl>` and :doc:`sauron
+</internals/sauron>`, provide core functionality collecting data and
+creating notifications respectively. The additional components,
+:doc:`lnote </internals/lnote>` and :doc:`wc_track
+</internals/wc_track>` wrap :doc:`stl </internals/stl>` and
+:doc:`sauron </internals/sauron>` to provide more useful automatic
+operation. In the case of :doc:`lnote </internals/lnote>`, to provide
+a way of creating arbitrary log messages to annotate a status log: and
+in the case of :doc:`wc_track </internals/wc_track>`, to provide a way
+of automatically collecting word count data from a number of
+pre-configured projects.
+
+The documentation listed below provides an overview of the internal
+implementation of each Python module, including code samples, with 
+particular attention toward enhancement and future extension. For
+usage information consider the :doc:`/use` documentation.
 
 Programs
 --------
