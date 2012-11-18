@@ -1,4 +1,39 @@
-=================
-``stl`` Internals
-=================
+=============
+stl Internals
+=============
 
+Overview
+--------
+
+Dependencies
+------------
+
+Internal Modules
+~~~~~~~~~~~~~~~~
+
+- sauron
+
+Standard Library Modules
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+- os.path
+- subprocess
+- argparse
+
+Implementation
+--------------
+
+.. method:: stl.shell_word_count( directory, extension='txt')
+
+.. method:: stl.wc_message_builder( project, directory, force=None, extension=None)
+
+.. method:: stl.wc_message(word_count, project)
+
+.. method:: stl.generate_events(project, directory, target, quiet=False, log=None, emacs=True, force=False, extension=None)
+
+.. method:: stl.cli()
+
+.. method:: stl.main()
+
+Extension
+---------

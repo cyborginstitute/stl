@@ -5,7 +5,7 @@
 .. note:: 
    
    This documentation reflects the legacy implementation of
-   ``stl``. See :doc:`/code` for the current implementation.
+   ``stl``. See :doc:`/internals` for the current implementation.
 
 .. note:: 
 

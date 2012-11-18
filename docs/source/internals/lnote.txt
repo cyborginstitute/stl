@@ -1,4 +1,85 @@
-===================
-``lnote`` Internals
-===================
+===============
+lnote Internals
+===============
 
+Overview
+--------
+
+:doc:`lnote </man/lnote>` is a basic example of a :doc:`sauron
+</internals/sauron>` and :doc:`stl </internals/stl>`, wrapper. It
+allows users to insert messages into the message
+
+Practically being able to insert arbitrary messages into the log is
+great for personal logging because it allows you to provide a little
+bit of context. At only 45 lines, the module also demonstrates the
+small account of code required to extend and collect data for the
+personal log.
+
+Dependencies
+------------
+
+:doc:`lnote </man/lnote>` depends on the following Python modules:
+
+Internal Modules
+~~~~~~~~~~~~~~~~
+
+- :doc:`sauron </internals/sauron>`
+- :doc:`wc_track </internals/wc_track>`
+
+Standard Library Components
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``argparse``
+- ``datetime``
+
+Methods
+-------
+
+.. module:: lnote
+
+.. method:: cli()
+
+   Defines the basic basic command-line interaction. If the
+   :data:`sauron.emacs_daemons` list is empty then it suppresses
+   Sauron notification. 
+   
+   Takes no arguments and returns the ``argparse`` parsed arguments.
+
+.. method:: send_message(note, target)
+
+   :param string note: 
+
+      The message text. Passed in :meth:`lnote.main()` from the
+      command line output returned by :meth:`lnote.cli()`. 
+                       
+   :param string target:
+      
+      The name of the emacs daemon to send the Sauron notification
+      to. Must be in the :data:`sauron.emacs_daemons` structure.
+
+   Creates and object of the :class:`sauron.NotificationMessage` class
+   and sends the message. Also writes the message to a log. If you
+   need to modify the loggoing output, edit this part of the module.
+
+.. method:: main()
+
+   The primary entry point into :option:`lnote`. Simply calls the
+   :meth:`cli()` method and pass its data into
+   :meth:`send_message()`.
+
+Extension
+---------
+
+In general ``lnote`` is a skeleton ``stl`` tool. To create new tools: 
+
+- copy ``lnote``, 
+
+- create a new function that returns a different message, and
+
+- optionally change the ``source`` parameter in the creation of the
+  :class:`sauron.NotificationMessage`  object, within
+  :meth:`send_message()`.
+        
+- customize the logging behavior of :meth:`send_message()` as needed.
+
+Everything else is standard.

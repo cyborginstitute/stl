@@ -1,4 +1,45 @@
-====================
-``sauron`` internals
-====================
+================
+sauron Internals
+================
 
+Overview
+--------
+
+Dependencies
+------------
+
+- argparse
+- socket
+- subprocess
+- os
+
+Implementation
+--------------
+
+Data
+~~~~
+
+.. data:: sauron.work_emacs_daemons
+
+.. data:: sauron.personal_emacs_daemons
+
+.. data:: sauron.emacs_daemons
+
+Methods
+~~~~~~~
+
+.. method:: sauron.parse_message(message)
+
+.. method:: sauron.notify_send(message)
+
+Interfaces and Classes
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. class:: sauron.NotificationMessage()
+
+.. method:: sauron.main()
+
+.. method:: sauron.cli()
+
+Extension and Development
+-------------------------

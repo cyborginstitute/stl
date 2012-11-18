@@ -1,4 +1,33 @@
-======================
-``wc_track`` Internals
-======================
+==================
+wc_track Internals
+==================
 
+Overview
+--------
+
+
+
+Dependencies
+------------
+
+Internal
+~~~~~~~~
+
+- stl
+
+Standard Library
+~~~~~~~~~~~~~~~~
+
+- socket (minor)
+- os.path (remove)
+- argparse
+
+Implementation
+--------------
+
+.. data:: project
+.. method:: set_quiet()
+.. method:: main()
+
+Extension
+---------
