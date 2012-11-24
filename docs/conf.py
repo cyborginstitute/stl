@@ -8,7 +8,7 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.todo']
+extensions = ['sphinx.ext.todo', 'sphinx.ext.intersphinx']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['.templates']
@@ -23,7 +23,7 @@ master_doc = 'index'
 project = u'Personal Status Logger (stl)'
 copyright = u'2011, Sam Kleinman'
 
-version = '0.1'
+version = '0.2'
 release = ''
 
 # List of patterns, relative to source directory, that match files and
@@ -114,4 +114,4 @@ epub_copyright = u'2011, Sam Kleinman'
 #epub_tocdup = True
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'http://docs.python.org/': None}
+intersphinx_mapping = {'python': ('http://docs.python.org/', None) }
