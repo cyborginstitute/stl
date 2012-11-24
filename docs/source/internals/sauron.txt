@@ -2,44 +2,157 @@
 sauron Internals
 ================
 
+.. module:: sauron
+
 Overview
 --------
+
+:doc:`saroun </man/sauron>` provides a thin wrapper around `Saruon
+<http://www.emacswiki.org/emacs/Sauron>`_ so that programs running
+outside of emacs can send notifications via the shell, either remotely
+or locally, without needing to use dbus or other
+methods. :mod:`sauron` requires that your system runs Emacs as a
+daemon, and contains support for multiple emacs daemons running on the
+same system or under the same user account.
+
+Although you can run the command directly, as described in
+:doc:`sauron </man/sauron>`, you will typically use :mod:`sauron` by
+way of the :class:`NotificationMessage()` class, or in another
+shell script.
 
 Dependencies
 ------------
 
-- argparse
-- socket
-- subprocess
-- os
+- :mod:`argparse <python:argparse>`
+- :mod:`os <python:os>`
+- :mod:`subprocess <python:subprocess>`
+- :mod:`socket <python:socket>`
+- :mod:`datetime <python:datetime>`
 
 Implementation
 --------------
 
+The implementation of the :mod:`sauron` has the following components:
+
 Data
 ~~~~
 
-.. data:: sauron.work_emacs_daemons
+.. data:: work_emacs_daemons
 
-.. data:: sauron.personal_emacs_daemons
+   A list of "work" emacs daemons.
 
-.. data:: sauron.emacs_daemons
+.. data:: personal_emacs_daemons
+
+   A list of "personal" emacs daemons.
+
+.. data:: emacs_daemons
+
+   A new list consisting of all the elements of
+   :data:`work_emacs_daemons` and
+   :data:`personal_emacs_daemons`.
+
+   The first instance in this list is always the "default" emacs
+   used in other scripts.
+
+   The distinction between "work" and personal allows you to maintain
+   different log files. Coordinate these variables with the paths to
+   the log files in :mod:`wc_track`.
 
 Methods
 ~~~~~~~
 
-.. method:: sauron.parse_message(message)
+.. method:: parse_message(message)
 
-.. method:: sauron.notify_send(message)
+   Processes messages, to normalize formats for messages submitted as
+   strings or via the command line for use by Sauron.
 
 Interfaces and Classes
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. class:: sauron.NotificationMessage()
+.. class:: NotificationMessage( source=<hostname>, target=<emacs_daemon>, priority=<3>, message=<None>)
 
-.. method:: sauron.main()
+   :class:`NotificationMessage()` is the primary interface for
+   :mod:`sauron` and the other modules in the :doc:`stl </index>`
+   suite as well as by the :meth:`main()` method. When creating
+   :class:`NotificationMessage()` objects, you only *need* to pass the
+   ``message`` argument. Read the documentation of the following
+   default instance objects in the :class:`NotificationMessage()`
+   class for information about the parameters:
 
-.. method:: sauron.cli()
+   .. data:: NotificationMessage.target
+
+      Defaults to the first item in :data:`emacs_daemons` array. Used
+      to determine to which emacs instance :meth:`send()` will deliver
+      the notification.
+
+   .. data:: NotificationMessage.priority
+
+      Defaults to ``3``, which is the lowest priority of Sauron
+      messages that are conveyed to emacs users by default. Sauron
+      hides lower priorities unless users configure a different
+      threshold.
+
+   .. data:: NotificationMessage.source
+
+      A string, passed to sauron for the ``Orig`` field of the Sauron
+      display. Use this to describe or specify the process or script
+      that sends the notification. Defaults to the system hostname.
+
+   .. data:: NotificationMessage.message
+
+      The test of the massage. You must specify a value for this
+      variable.
+
+.. method:: NotificationMessage.send()
+
+   Call the :meth:`send()` to send a message to Sauron as configured,
+   as in the following invocation:
+
+   .. code-block:: python
+
+      n = NotificationMessage( message="this is a test message.")
+      n.send()
+
+.. method:: NotificationMessage.log()
+
+   :meth:`log()` is equivalent to :meth:`send()` except that it write
+   :data:`message` to a log file. This method will attempt to import
+   the :data:`wc_track.work_log` and :data:`wc_track.personal_log`
+   values from the :mod:`wc_track` module, and will output the log
+   message to standard out if there are no log files specified.
+
+   Consider the following invocation:
+
+   .. code-block:: python
+
+      n = NotificationMessage( message="this is a test message.")
+      n.log()
+
+.. method:: cli()
+
+   Collects input from the command line using :mod:`argparse
+   <python:argparse>`. See :doc:`/man/sauron` for more information
+   about the command line interface.
+
+   The return value of :meth:`cli()` is the output of
+   :meth:`python:argparse.ArgumentParser.parse_args()`.
+
+.. method:: main()
+
+   The entrance point for :mod:`sauron` when called from the command
+   line. Collects output from :meth:`cli()`, creates a
+   :class:`NotificationMessage` object, and then calls :meth:`send()
+   <NotificationMessage.send()>` on the object.
 
 Extension and Development
 -------------------------
+
+In many ways, the entire :doc:`stl suite </index>` is a wrapper and
+extension of the ``sauron`` module. Future development of
+:mod:`sauron` will focus on more flexible logging, options to provide
+more structured logs, and increased capacity with other emacs
+configurations. The command line interface might benefit from some
+additional work or other changes.
+
+:class:`NotificationMessage` encapsulates all functionality, and makes
+it easy to wrap and send notifications from other scripts.

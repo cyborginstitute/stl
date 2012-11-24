@@ -2,38 +2,165 @@
 stl Internals
 =============
 
+.. module:: stl
+
 Overview
 --------
+
+:mod:`stl` performs the core operations of the stl suite: 
+
+- collects word count data from project files.
+
+- caches and maintains word count data  (in `/tmp`) to prevent
+  overreacting of unchanged data.
+  
+- integrates with :mod:`sauron` to provide logging and notification.
 
 Dependencies
 ------------
 
+:mod:`stl` depends on the following system tools:
+
+- ``wc``
+- ``grep``
+- ``sed``
+- ``find``
+
+Additionally, it uses the following python modules:
+
 Internal Modules
 ~~~~~~~~~~~~~~~~
 
-- sauron
+:mod:`sauron`
 
 Standard Library Modules
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-- os.path
-- subprocess
-- argparse
+- :mod:`os.path <python:os.path>`
+- :mod:`subprocess <python:subprocess>`
+- :mod:`argparse <python:argparse>`
 
 Implementation
 --------------
 
-.. method:: stl.shell_word_count( directory, extension='txt')
+.. method:: shell_word_count( directory, extension='txt')
 
-.. method:: stl.wc_message_builder( project, directory, force=None, extension=None)
+   :param string directory: The path of the top level directory that
+                            contains the project's documents. Pass in
+                            as a string.
 
-.. method:: stl.wc_message(word_count, project)
+   :param string extension: The file extension, without the preceding
+                            period (i.e. ``.``) of all project
+                            files. All project files *must* have an
+                            extension. :mod:`stl` only counts the
+                            words in files that have this extension.
 
-.. method:: stl.generate_events(project, directory, target, quiet=False, log=None, emacs=True, force=False, extension=None)
+   :returns: The word count for the project files in the specified
+             directory.
 
-.. method:: stl.cli()
+.. method:: wc_message_builder( project, directory, force=None, extension=None )
 
-.. method:: stl.main()
+   :param string project: The name of the project. :mod:`stl` uses
+                          this string to report and track the word
+                          count for a specific project, to avoid
+                          over-reporting, and to annotate logs.
 
-Extension
----------
+   :param string directory: The path of the top level directory that
+                            contains the project's documents. Pass in
+                            as a string.
+
+   :param bool force: When true, always return the word count, even
+                         if the word count value is the same as the
+                         cached value.
+
+   :param extension: The file extension, without the preceding period
+                     (i.e. ``.``) of all project files. All project
+                     files *must* have an extension. :mod:`stl` only
+                     counts the words in files that have this
+                     extension.
+
+   :meth:`wc_message_builder()` is the main point of integration
+   between the parts of the script that collect and process the word
+   count data (i.e. :meth:`wc_message()` and
+   :meth:`shell_word_count()`) and :mod:`sauron()` that handles and
+   produces the notification and logging.
+
+   Not intended for direct use.
+
+.. method:: wc_message( word_count, project )
+
+   :param string word_count: The word count value as a string.
+
+   :param string project: The name of the project.
+
+   :returns: A string with a formed word count message used by
+             :meth:`wc_message_builder()`.
+
+.. method:: generate_events( project, directory, target, quiet=False, log=False, emacs=True, force=False, extension=None )
+
+   :param string project: The name of the project. Used to store the
+                          cached word count values.
+
+   :param string directory: The path of the directory that holds the
+                            project files.
+
+   :param string target: The name of the emacs daemon to send the
+                         notification to. If ``None``, does not send
+                         notifications.
+
+   :param bool quiet: If ``True``, suppresses output (on standard
+                      output.) Defaults to ``False``.
+
+   :param bool log: If ``True`` write output to the log. Uses the
+                    :meth:`sauron.NotificationMessage.log()`
+                    method. Defaults to ``False``.
+
+   :param bool emacs: If ``True`` send the Sauron
+                      notification. Defaults to ``True``.
+
+   :param bool force: If ``True`` passes ``force=True`` to
+                      :meth:`wc_message_builder()`, which impels
+                      reporting, even when the current value is
+                      the same as the cached value
+
+   :param string extension: The extension of the project files, to
+                            limit reporting to only relevant project
+                            files. If ``None``, the default,
+                            :meth:`generate_events()` does not pass
+                            the ``extension`` parameter to
+                            :meth:`shell_word_count()`.
+
+.. method:: cli()
+
+   Defines and describes the command line interface provided by
+   :mod:`python:argparse`. See :doc:`/man/stl` for full documentation
+   of this interface.
+
+.. method:: main()
+
+   Logically the flow of data through the methods in :mod:`stl` is:
+
+   #. data from :meth:`cli()` passes in from the user into the
+      :meth:`generate_events()`.
+
+   #. :meth:`generate_events()` calls :meth:`wc_message_builder()`, and
+      if :meth:`wc_message_builder()` returns data, then
+      :meth:`generate_events()` creates and distributes notifications.
+
+   #. :meth:`wc_message_builder()` calls :meth:`shell_word_count()` to
+      return the word count, and then uses :meth:`wc_message()` to
+      format and return the word count message to
+      :meth:`generate_events()` where all of the main action is.
+
+Extension and Improvement
+-------------------------
+
+- Data generated by :mod:`stl` could be pre-aggregated in some way
+  (running totals, daily progress, etc.), or collected in some system
+  more easily analyzed.
+
+- For projects stored in git, some information about commit, update
+  (i.e. pull) events or branch context, might provide some basic
+  insight when reviewing ``stl`` logs. While each system logs to its
+  own log file, some sort of centralization or synchronizing of log
+  data may be useful. 

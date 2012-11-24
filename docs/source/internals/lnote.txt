@@ -2,6 +2,8 @@
 lnote Internals
 ===============
 
+.. module:: lnote
+
 Overview
 --------
 
@@ -29,31 +31,29 @@ Internal Modules
 Standard Library Components
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- ``argparse``
-- ``datetime``
+- :mod:`argparse <python:argparse>`
+- :mod:`datetime <python:datetime>`
 
 Methods
 -------
-
-.. module:: lnote
 
 .. method:: cli()
 
    Defines the basic basic command-line interaction. If the
    :data:`sauron.emacs_daemons` list is empty then it suppresses
-   Sauron notification. 
-   
+   Sauron notification.
+
    Takes no arguments and returns the ``argparse`` parsed arguments.
 
 .. method:: send_message(note, target)
 
-   :param string note: 
+   :param string note:
 
       The message text. Passed in :meth:`lnote.main()` from the
-      command line output returned by :meth:`lnote.cli()`. 
-                       
+      command line output returned by :meth:`lnote.cli()`.
+
    :param string target:
-      
+
       The name of the emacs daemon to send the Sauron notification
       to. Must be in the :data:`sauron.emacs_daemons` structure.
 
@@ -70,16 +70,16 @@ Methods
 Extension
 ---------
 
-In general ``lnote`` is a skeleton ``stl`` tool. To create new tools: 
+In general ``lnote`` is a skeleton ``stl`` tool. To create new tools:
 
-- copy ``lnote``, 
+- copy ``lnote``,
 
 - create a new function that returns a different message, and
 
 - optionally change the ``source`` parameter in the creation of the
   :class:`sauron.NotificationMessage`  object, within
   :meth:`send_message()`.
-        
+
 - customize the logging behavior of :meth:`send_message()` as needed.
 
 Everything else is standard.

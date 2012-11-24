@@ -2,11 +2,14 @@
 Status Logger Use and Operation
 ===============================
 
+.. _manual-pages:
+.. _man-pages:
+
 Manual Pages
 ------------
 
 .. toctree::
-   :maxdepth: 1
+   :max depth: 1
 
    /man/lnote
    /man/wc_track
@@ -15,6 +18,51 @@ Manual Pages
 
 See :doc:`/internals` for more information about the implementation
 of each component.
+
+.. _getting-started:
+
+Getting Started
+---------------
+
+While ``stl`` may have more traditional Python packaging in the
+future, given the current state of development and organization, to
+begin using STL you should simply add the four constituent files to
+the *same* folder in you shell's search path, by adding one of the
+following lines to your :file:`~/.bashrc`, :file:`~/.bash_profile`, or
+:file:`~/.zshrc` (or similar) file:
+
+.. code-block:: sh
+
+   PATH=$PATH:~/bin
+   PATH=$PATH:~/scripts
+   PATH=$PATH:/opt/bin
+
+Then, copy the files in the ``stl/`` directory in the ``stl``
+repository to this directory. You can issue the following sequence of
+commands at your system prompt to download the files hosted on github:
+
+.. code-block:: sh
+
+   curl http://raw.github.com/cyborginstitute/stl/master/stl.py > stl.py
+   curl http://raw.github.com/cyborginstitute/stl/master/lnote.py > lnote.py
+   curl http://raw.github.com/cyborginstitute/stl/master/wc_track.py > wc_track.py
+   curl http://raw.github.com/cyborginstitute/stl/master/sauron.py > sauron.py
+
+Then create symlinks in this directory for easy use without the
+``.py`` extension, with the following commands. Replace ``~/bin`` with
+the path to your personal script directory:
+
+.. code-block:: sh
+
+   cd ~/bin
+   ln -s stl stl.py
+   ln -s lnote lnote.py
+   ln -s wc_track wc_track.py
+   ln -s sauron sauron.py
+
+Continue reading the :ref:`manual pages <manual-pages>` pages the
+:doc:`internals section </internals>` for more information about the
+use and implementation of stl.
 
 General Operation
 -----------------
@@ -46,7 +94,7 @@ level, these programs are:
 
 The ``projects`` dict in the :file:`wc_track` file, provides a way to
 pre-configure :file:`wc_track` as a wrapper around
-:file:`stl`. Consider the following basic setup: 
+:file:`stl`. Consider the following basic setup:
 
 .. code-block:: python
 
