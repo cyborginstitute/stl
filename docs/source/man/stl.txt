@@ -5,8 +5,8 @@
 Synopsis
 --------
 
-``stl`` is a command line word count tool for projects. :doc:`wc_track
-<wc_track>` provides a more consistent interface for this word count
+``stl`` is a command line word count tool for projects. :doc:`wc-track
+<wc-track>` provides a more consistent interface for this word count
 functionality, and wraps the operation of ``stl``. Use the ``stl``
 module as a starting point for adding additional data collection
 modules to the ``stl`` system.
@@ -72,7 +72,7 @@ following:
 
    stl --project rhizome --directory ~/wikish/rhizome/ --extension mdwn --logfile ~/stl.log
 
-Consider the following section from :doc:`wc_track <wc_track>`, that
+Consider the following section from :doc:`wc-track <wc-track>`, that
 wraps ``stl``:
 
 .. code-block:: python

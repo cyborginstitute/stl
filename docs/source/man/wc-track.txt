@@ -55,35 +55,42 @@ each project that you want to report on with :doc:`stl
 Consider the following documentation of each of these fields:
 
 .. py:data:: projects
+   :noindex:
 
    Holds the name of the project. Used as :option:`stl --project`.
 
 .. py:data:: projects.'path'
+   :noindex:
 
    Holds the path to the top level of the project. Used as
    :option:`stl --directory`.
 
 .. py:data:: projects.'target'
+   :noindex:
 
    Holds the name of the emacs instance to send the Sauron
    notification. Used as :option:`sauron --target`.
 
 .. py:data:: projects.'emacs'
+   :noindex:
 
    A Boolean value. If ``False``, this will disable output to emacs
    and Sauron.
 
 .. py:data:: projects.'quiet'
+   :noindex:
 
    A Boolean value. If true, will suppress all command line
    output. Used as :option:`stl --quiet`.
 
 .. py:data:: projects.'log'
+   :noindex:
 
    Holds the path of the log file to record output data. Used as
    :option:`stl --log`.
 
 .. py:data:: projects.'ext'
+   :noindex:
 
    Holds the extension of all project files, that :doc:`stl <stl>`
    will measure. All files with different extensions ignored. Used as

@@ -8,6 +8,7 @@ Contents
 .. toctree::
    :maxdepth: 1
 
+   getting-started
    use
    internals
    contribute
@@ -38,8 +39,8 @@ Resources
 The latest version of this manual is also available for download in
 ePub and PDF formats:
 
-- `stl Manual, ePub </projects/stl/stl.epub>`_
-- `stl Manual, PDF </projects/stl/stl.pdf>`_
+- `stl Manual, ePub <http://cyborginstitute.org/projects/stl/stl.epub>`_
+- `stl Manual, PDF <http://cyborginstitute.org/projects/stl/stl.pdf>`_
 
 Overview
 --------

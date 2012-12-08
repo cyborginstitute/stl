@@ -1,0 +1,89 @@
+==================================
+Getting Started with Status Logger
+==================================
+
+Overview
+--------
+
+You have a couple of options for implementing status logger: 
+
+#. Use the ``simple`` method which creates a directory with the Python
+   scripts and symbolic links. Place the content of this directory in
+   your ``PATH`` and being using stl directly. 
+
+   Use this if you want the most hands on experience with stl. 
+
+#. Build and install using Python setuptools.
+   
+   If you do work in Python and are comfortable with Python tools,
+   this option may make the most sense for you.
+
+In the future stl may be available as a package in the Python Package
+repository.
+
+For full documentation of all stl components see: 
+
+- :doc:`/internals` for documentation of the classes, methods, and
+  implementation of each Python module, including . 
+  
+- :doc:`/use` for documentation of the command line interface of each
+  module, including descriptions of use 
+
+Procedure
+---------
+
+Regardless of the method you use, at this time you will need to
+download the repository, using the following command at a system
+prompt: 
+
+.. code-block:: sh
+
+   git clone http://git.cyborginstitute.net/repo/stl.git
+
+Then from within the ``stl/`` directory follow either of the following
+processes. 
+
+.. note:: 
+   
+   You may want to modify your files, particularly :mod:`wc_track`
+   before installing stl.
+   
+Direct Installation
+~~~~~~~~~~~~~~~~~~~
+
+Issue the following command at the system prompt to "stage" the
+installation:
+
+.. code-block:: sh
+
+   make simple
+                
+All required stl programs (and symbolic links,) are now in
+:file:`stl/build/bin/`. Either copy the content of this directory into
+a directory in your search path, (g.e. :file:`~/scripts/`) or add this
+directory to your search path, by adding the following lines to your
+shell ``rc`` or ``profile`` file (e.g. :file:`~/.bashrc`,
+:file:`~/.zshrc`, or :file:`~/.profile`.)
+
+.. code-block:: sh
+
+   PATH=$PATH:~/scripts
+   export PATH
+
+You may have to reinitialize or source your ``rc``/``profile`` file
+for the change to take place. You'll be able to use any of the stl
+programs from your system shell.
+
+Install with ``setup.py``
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Issue the following command to build and install the stl python
+package: 
+
+.. code-block:: sh
+
+   sudo make install
+
+This make target simply calls ``python setup.py install``. Because
+this operation installs files in :file:`/usr/bin` or a similar path,
+this requires root access (i.e. ``sudo``.)

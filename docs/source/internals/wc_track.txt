@@ -54,7 +54,7 @@ Variables and Data
 
    Stores the path of a "work" projects log file. Defaults to:
    :file:`~/.stl/work-stats-<hostname>.log`, where ``<hostname>`` is
-   the output of :meth:`python.socket.gethostname()`. Override as
+   the output of :meth:`noindex:python:socket.gethostname()`. Override as
    needed.
 
 .. data:: projects
@@ -63,10 +63,10 @@ Variables and Data
    information for projects that you will use :mod:`wc_track` to
    collect data on regularly. for tracking. 
 
-   Each project has a key in
-   :data:`projects`, which hols a dictionary with keys that map to the
-   arguments to :meth:`stl.generate_events()` or :doc:`stl
-   </man/stl>`. The :data:`projects  the following keys: 
+   Each project has a key in :data:`projects`, which holds a
+   dictionary. The keys of that dictionary map to the arguments to
+   :meth:`stl.generate_events()`/\ :doc:`stl </man/stl>`. The
+   :data:`projects` the following keys:
          
    .. data:: projects.<project>.path
 

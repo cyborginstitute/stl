@@ -9,10 +9,10 @@ Manual Pages
 ------------
 
 .. toctree::
-   :max depth: 1
+   :maxdepth: 1
 
    /man/lnote
-   /man/wc_track
+   /man/wc-track
    /man/sauron
    /man/stl
 
@@ -49,20 +49,22 @@ commands at your system prompt to download the files hosted on github:
    curl http://raw.github.com/cyborginstitute/stl/master/sauron.py > sauron.py
 
 Then create symlinks in this directory for easy use without the
-``.py`` extension, with the following commands. Replace ``~/bin`` with
+``.py`` extension, with the following commands. Replace ``~/scripts`` with
 the path to your personal script directory:
 
 .. code-block:: sh
 
-   cd ~/bin
+   cd ~/scripts
    ln -s stl stl.py
    ln -s lnote lnote.py
-   ln -s wc_track wc_track.py
+   ln -s wc-track wc_track.py
    ln -s sauron sauron.py
 
 Continue reading the :ref:`manual pages <manual-pages>` pages the
 :doc:`internals section </internals>` for more information about the
 use and implementation of stl.
+
+See 
 
 General Operation
 -----------------
@@ -72,16 +74,17 @@ may use either independently or in conjunction. From the highest
 level, these programs are:
 
 - :doc:`sauron </man/sauron>`: A script that provides a wrapper around
-  emacsclient, and ethe emacs notification system `sauron
-  </>`_. Supports multiple emacs clients running on a single
+  emacsclient, and ethe emacs notification system
+  :term:`Sauron`. Supports multiple emacs clients running on a single
   system/user account, and does not require a `dbus`
-  configuration. This provides a programatic interface for sauron-mode.
+  configuration. This provides a programatic interface for
+  sauron-mode.
 
 - :doc:`stl </man/stl>`: A script that provides a simple interface to
   calculate and log word counts for multi-file projects. This script
   does not store any information regarding projects or configuration.
 
-- :doc:`wc_track </man/wc_track>`: For running regularly as a cronjob,
+- :doc:`wc-track </man/wc-track>`: For running regularly as a cronjob,
   ``wc_track`` stores the :py:data:`projects` dict that contains
   per-project configuration, and several functions for automatically
   running ``stl`` for each project.
@@ -111,5 +114,5 @@ pre-configure :file:`wc_track` as a wrapper around
       },
     }
 
-See :doc:`/man/wc_track` and :doc:`/internals/wc_track` for more
+See :doc:`/man/wc-track` and :doc:`/internals/wc_track` for more
 information.
