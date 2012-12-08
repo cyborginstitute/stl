@@ -1,8 +1,8 @@
-MAKEFLAGS += --include-dir docs/
+MAKEFLAGS += --include-dir docs/ --no-print-directory
 PYTHONBIN := $(shell which python)
 bin-output = build/bin
 
-include docs/makefile.docs
+.PHONY: install build sdist docs simple
 
 install:
 	$(PYTHONBIN) setup.py install
@@ -10,6 +10,8 @@ build:
 	$(PYTHONBIN) setup.py build
 sdist:
 	$(PYTHONBIN) setup.py sdist
+docs: 
+	@$(MAKE) -C docs/ publish
 
 simple:
 	mkdir -p $(bin-output)/

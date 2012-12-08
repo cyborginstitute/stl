@@ -33,8 +33,9 @@ $(BUILDDIR)/publish/stl.pdf:$(BUILDDIR)/latex/stl.pdf
 	@cp $< $@
 	@echo [build]: migrating $@
 
+$(BUILDDIR)/dirhtml/use:dirhtml
 $(BUILDDIR)/dirhtml/usage:dirhtml
-$(BUILDIR)/dirhtml/use/index.html:dirhtml
+$(BUILDDIR)/dirhtml/use/index.html:dirhtml
 $(BUILDDIR)/dirhtml/man/index.html:$(BUILDDIR)/dirhtml/use/index.html
 	@ln -s -f ../use/index.html index.html
 	@mv index.html $@
