@@ -5,7 +5,16 @@ wc_track Internals
 Overview
 --------
 
+:mod:`wc_track` is a wrapper around :mod:`sauron` and :mod:`stl` that
+provides an initial implementation of per-project tracking and
+operation. See :doc:`/man/wc-track` for more information about use. 
 
+In most cases, you will not need to use :mod:`wc_track` from another
+Python module, although some of the data in the :data:`projects`
+dictionary may be useful in other scripts. In the future the
+configuration of projects may be distinct from :mod:`wc_track`, but at
+the moment you will need to edit :file:`wc_track.py` before installing
+and using :doc:`wc-track </man/wc-track>`. 
 
 Dependencies
 ------------
@@ -13,21 +22,121 @@ Dependencies
 Internal
 ~~~~~~~~
 
-- stl
+:mod:`stl`
 
 Standard Library
 ~~~~~~~~~~~~~~~~
 
-- socket (minor)
-- os.path (remove)
-- argparse
+- :mod:`python:socket`
+- :mod:`python:os`
+- :mod:`python:argparse`
 
 Implementation
 --------------
 
-.. data:: project
+Variables and Data
+~~~~~~~~~~~~~~~~~~
+
+.. data:: username
+   
+   Stores the current username.  By default, uses
+   :meth:`python:os.getusername()` to get the username of the user
+   that owns its process. Override if needed, and with caution.
+
+.. data:: personal_log
+          
+   Stores the path of a "personal" projects log file. Defaults to:
+   :file:`~/.stl/personal-stats-<hostname>.log`, where ``<hostname>``
+   is the output of :meth:`python.socket.gethostname()`. Override as
+   needed.
+
+.. data:: work_log
+
+   Stores the path of a "work" projects log file. Defaults to:
+   :file:`~/.stl/work-stats-<hostname>.log`, where ``<hostname>`` is
+   the output of :meth:`python.socket.gethostname()`. Override as
+   needed.
+
+.. data:: projects
+
+   A data structure (python dictionary) that stores configuration
+   information for projects that you will use :mod:`wc_track` to
+   collect data on regularly. for tracking. 
+
+   Each project has a key in
+   :data:`projects`, which hols a dictionary with keys that map to the
+   arguments to :meth:`stl.generate_events()` or :doc:`stl
+   </man/stl>`. The :data:`projects  the following keys: 
+         
+   .. data:: projects.<project>.path
+
+      The path to the project's top level directory. :mod:`wc_track`
+      passes this value as ``directory`` to :meth:`stl.generate_events()`.
+
+   .. data:: projects.<project>.target
+
+      The name of the emacs daemon to send notifications about this
+      project. :mod:`wc_track` passes this value as ``target`` to
+      :meth:`stl.generate_events()`.
+
+   .. data:: projects.<project>.emacs
+
+      A Boolean value. If ``True``, send a notification to emacs via
+      :mod:`sauron`. :mod:`wc_track` passes this value as ``emacs``
+      to :meth:`stl.generate_events()`.
+
+   .. data:: projects.<project>.quiet
+
+      A Boolean value. If ``True``, suppress all output on the
+      console. :mod:`wc_track` passes this value as ``quiet``
+      to :meth:`stl.generate_events()`. 
+
+   .. data:: projects.<project>.log
+
+      A filesystem path to the log. Typically :data:`personal_log` or
+      :data:`work_log`. 
+
+   .. data:: projects.<project>.ext
+
+      The extension of the project files. :mod:`wc_track` passes this
+      value as ``quiet`` to :meth:`stl.generate_events()`.
+
 .. method:: set_quiet()
+
+   :param bool force: Pass ``True`` to override the value of
+                      :data:`projects.<project>.quiet`.
+
+   :param project_quiet: A value, likely a bool, which
+                         :meth:`set_quiet()` will return if ``force``
+                         is ``False``. 
+
+   A helper method that takes two arguments. If the first is true, the
+   method will return ``True`` (and override the
+   :data:`projects.<project>.quiet`,) otherwise :meth:`set_quiet()`
+   returns the second value.
+
 .. method:: main()
+
+   The core operation of the program. Includes the following
+   operations: 
+   
+   - Read input and user from the command line. 
+     
+   - If users do not specify and project, iterate through all projects
+     in :data:`projects` and report all statistics if different from
+     the cached values. (*Unless passed forced on the command line.*)
+     
+   - If users *do* specify a project, report only thhose projects, and
+     only if they've not changed in the since (*Unless passed forced
+     on the command line.*)
+
+   See :doc:`/man/wc-track` for more information. 
 
 Extension
 ---------
+
+In most cases, there are few possible modifications or extensions to
+:mod:`wc_track`, but it serves as a good example for the kinds of
+modification and interfaces that you could provide to the kinds of
+personal statistic monitoring and recording as part of STL and future
+related tools.

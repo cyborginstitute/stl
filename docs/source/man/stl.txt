@@ -25,7 +25,11 @@ Options
    For users that run multiple named ``emacs`` daemon instances, this
    option allows you to send the :term:`Sauron` notification to a
    specific named instances. Chosen from a list of daemons defined in
-   ``sauron.py``.
+   :mod:`sauron`.
+
+   If you do not modify the value of the :data:`emacs_daemon`,
+   :program:`stl` will assume that your system only has one emacs
+   instance running.
 
 .. option:: --project <name>, -p <name>
 

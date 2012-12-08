@@ -11,7 +11,7 @@ Overview
 
 - collects word count data from project files.
 
-- caches and maintains word count data  (in `/tmp`) to prevent
+- caches and maintains word count data  (in ``/tmp``) to prevent
   overreacting of unchanged data.
   
 - integrates with :mod:`sauron` to provide logging and notification.
@@ -43,7 +43,7 @@ Standard Library Modules
 Implementation
 --------------
 
-.. method:: shell_word_count( directory, extension='txt')
+.. method:: shell_word_count( directory, extension='txt' )
 
    :param string directory: The path of the top level directory that
                             contains the project's documents. Pass in

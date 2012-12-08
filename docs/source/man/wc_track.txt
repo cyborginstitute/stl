@@ -1,11 +1,11 @@
 ===================
-``wc_track`` Manual
+``wc-track`` Manual
 ===================
 
 Synopsis
---------
+-------- 
 
-``wc_track`` is a simplified wrapper around :doc:`stl </man/stl>` with
+``wc-track`` is a simplified wrapper around :doc:`stl </man/stl>` with
 :ref:`stored configuration <projects-config>`.
 
 Options
@@ -19,8 +19,8 @@ Options
 
    By default :doc:`stl </man/stl>` caches a copy of the word count for each project
    in the ``/tmp/stl/`` directory. If you pass :option:`--force`,
-   ``wc_track`` will log and notify on all word-count events *even if* the
-   value has not changed since the last time ``wc_track`` ran.
+   ``wc-track`` will log and notify on all word-count events *even if* the
+   value has not changed since the last time ``wc-track`` ran.
 
 .. option:: --project <project-name>, -p <p>
 
@@ -28,7 +28,7 @@ Options
    defined in the :ref:`projects-config` by the :py:data:`<project>`
    value.
 
-   If you do not specify :option:`--project`, ``wc_track`` will report
+   If you do not specify :option:`--project`, ``wc-track`` will report
    all projects defined in the :ref:`projects structure
    <projects-config>`.
 
@@ -92,14 +92,14 @@ Consider the following documentation of each of these fields:
 Use
 ---
 
-At the system shell, invoke ``wc_track`` as in one of the following
+At the system shell, invoke ``wc-track`` as in one of the following
 examples.
 
 .. code-block:: sh
 
-   wc_track
-   wc_track --project rhizome
-   wc_track -f --project rhizome
+   wc-track
+   wc-track --project rhizome
+   wc-track -f --project rhizome
 
 Often it makes sense to run this program automatically using ``cron``
 or some other scheduling tool. Consider the following ``crontab``
@@ -107,12 +107,12 @@ lines:
 
 .. code-block:: none
 
-   */2 9-18 * * 1-5             wc_track > /dev/null 2>&1
-   */2 * * * *                  wc_track > /dev/null 2>&1
+   */2 9-18 * * 1-5             wc-track > /dev/null 2>&1
+   */2 * * * *                  wc-track > /dev/null 2>&1
 
-The first operation schedules ``wc_track`` to run every two minutes,
+The first operation schedules ``wc-track`` to run every two minutes,
 between 9 am and 6 pm, Monday through Friday. The second operation
-runs ``wc_track`` every two minutes at all times.
+runs ``wc-track`` every two minutes at all times.
 
 Typically there is no need to use ``wc_track`` from other Python
 scripts, and no interface for that; however, you may want to access
