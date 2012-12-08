@@ -2,12 +2,12 @@
 
 import stl
 import socket
-import os.path
 import argparse
+import os
 
-username = 'USERNAME'
-personal_log = '/home/' + username +'/projects/stats-' + socket.gethostname() + '.log'
-work_log = '/home/' + username + '/work/stats-' + socket.gethostname() + '.log'
+username = os.getusername()
+personal_log = '/home/' + username +'/.stl/personal-stats-' + socket.gethostname() + '.log'
+work_log = '/home/' + username + '/.stl/work-stats-' + socket.gethostname() + '.log'
 
 projects = {
      'stl' : {

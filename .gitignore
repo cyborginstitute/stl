@@ -4,3 +4,6 @@
 #*#
 *#*
 docs/build/*
+__pycache__
+build/
+dist

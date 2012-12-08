@@ -1,7 +1,7 @@
 MAKEFLAGS += -j -r --no-print-directory
 # Makefile for Sphinx documentation
 #
-
+include makefile.docs
 
 # You can set these variables from the command line.
 SPHINXOPTS    = -c ./
@@ -55,5 +55,3 @@ links:$(link-targets)
 
 clean:
 	rm -rf $(BUILDDIR)/*
-
-include makefile.docs

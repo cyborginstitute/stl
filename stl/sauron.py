@@ -6,11 +6,11 @@ import socket
 import subprocess
 import os
 
-## setting defaults
+# setting defaults:
+personal_emacs_daemons = []
+work_emacs_daemons = []
 
-work_emacs_daemons = ['work']
-personal_emacs_daemons = ['tychoish']
-
+# Implementation:
 emacs_daemons = personal_emacs_daemons + work_emacs_daemons
 
 def cli():
