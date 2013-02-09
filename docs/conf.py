@@ -41,36 +41,29 @@ html_theme_options = { 'project': git_name }
 html_theme = 'cyborg'
 html_theme_path = ['themes']
 
-# The name for this set of Sphinx documents.  If None, it defaults to
-# "<project> v<release> documentation".
+html_use_smartypants = True
+html_theme_options = { 
+    'project': git_name, 
+    'ga_code': 'UA-2505694-4'
+}
+
+html_sidebars = {
+    '**': ['localtoc.html', 'relations.html', 'sourcelink.html'],
+}
+
 #html_title = None
-# A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
-# The name of an image file (relative to this directory) to place at the top
-# of the sidebar.
 #html_logo = None
-# The name of an image file (within the static path) to use as favicon of the
-# docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
-# pixels large.
 #html_favicon = None
+
+html_use_index = True
+html_show_sourcelink = False
+html_show_sphinx = False
+html_show_copyright = True
+
 
 html_static_path = ['source/.static']
 html_use_smartypants = True
-
-# If false, no module index is generated.
-#html_domain_indices = True
-# If false, no index is generated.
-#html_use_index = True
-# If true, the index is split into individual pages for each letter.
-#html_split_index = False
-# If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
-# If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-#html_show_sphinx = True
-# If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-#html_show_copyright = True
-
-# Output file base name for HTML help builder.
 htmlhelp_basename = 'cyborg-institute'
 
 # -- Options for LaTeX output --------------------------------------------------
